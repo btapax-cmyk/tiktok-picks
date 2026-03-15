@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My TikTok Picks — Brand Recommendations by @YourName</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0a0f; --bg2:#111118; --bg3:#16161f; --surface:#1c1c28;
+  --border:rgba(255,255,255,0.07); --pink:#ff2d78; --cyan:#00f5d4;
+  --yellow:#ffe227; --white:#f0f0f5; --muted:#7c7c99;
+  --radius:16px; --fh:'Syne',sans-serif; --fb:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--fb);background:var(--bg);color:var(--white);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;opacity:0.4;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(255,45,120,.4)}50%{box-shadow:0 0 40px rgba(255,45,120,.8)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(10,10,15,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);animation:fadeIn .5s ease both;}
+.logo{font-family:var(--fh);font-size:18px;font-weight:800;display:flex;align-items:center;gap:6px;}
+.logo .at{color:var(--pink);}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite;display:inline-block;}
+.nav-tiktok{display:flex;align-items:center;gap:7px;background:rgba(255,45,120,.12);
+  border:1px solid rgba(255,45,120,.3);color:var(--pink);
+  padding:8px 18px;border-radius:100px;font-size:13px;font-weight:600;transition:background .2s;}
+.nav-tiktok:hover{background:rgba(255,45,120,.22);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:120px 24px 60px;position:relative;}
+.hero-glow{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(255,45,120,.12) 0%,transparent 60%),
+  radial-gradient(ellipse 40% 40% at 80% 80%,rgba(0,245,212,.07) 0%,transparent 50%);}
+.avatar-wrap{position:relative;display:inline-block;margin-bottom:20px;}
+.avatar{width:96px;height:96px;border-radius:50%;
+  background:linear-gradient(135deg,var(--pink),var(--cyan));
+  display:flex;align-items:center;justify-content:center;
+  font-size:42px;border:3px solid rgba(255,45,120,.4);box-shadow:0 0 40px rgba(255,45,120,.3);}
+.avatar-live{position:absolute;bottom:4px;right:2px;background:var(--pink);color:#fff;
+  font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;font-family:var(--fh);}
+.creator-name{font-family:var(--fh);font-size:clamp(26px,4vw,42px);font-weight:800;
+  letter-spacing:-1px;margin-bottom:5px;}
+.creator-handle{font-size:16px;color:var(--pink);font-weight:600;margin-bottom:12px;}
+.creator-bio{font-size:15px;color:var(--muted);max-width:480px;line-height:1.7;
+  margin:0 auto 24px;}
+.social-stats{display:flex;gap:28px;justify-content:center;margin-bottom:30px;flex-wrap:wrap;}
+.sstat .num{font-family:var(--fh);font-size:22px;font-weight:800;line-height:1;}
+.sstat .lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.btn-p{display:inline-flex;align-items:center;gap:8px;background:var(--pink);color:#fff;
+  padding:13px 28px;border-radius:100px;font-size:15px;font-weight:700;font-family:var(--fh);
+  box-shadow:0 4px 24px rgba(255,45,120,.4);transition:transform .2s,box-shadow .2s;animation:glow 3s ease infinite;}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(255,45,120,.6);}
+.btn-o{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--white);
+  padding:13px 22px;border-radius:100px;font-size:15px;font-weight:500;
+  border:1px solid var(--border);transition:border-color .2s,background .2s;}
+.btn-o:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.05);}
+
+/* MARQUEE */
+.mq-wrap{padding:16px 0;background:var(--bg2);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;}
+.mq-track{display:flex;animation:marquee 22s linear infinite;width:max-content;}
+.mq-item{display:flex;align-items:center;gap:10px;padding:0 28px;
+  font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap;}
+.mq-sep{color:var(--pink);}
+
+/* SECTION */
+.sec{padding:80px 24px;max-width:1200px;margin:0 auto;}
+.sec-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;}
+.sec-tag::before{content:'';width:18px;height:2px;background:var(--cyan);}
+.sec-title{font-family:var(--fh);font-size:clamp(26px,4vw,44px);font-weight:800;
+  line-height:1.1;letter-spacing:-1.5px;margin-bottom:36px;}
+.sec-title span{color:var(--pink);}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;}
+.fbtn{background:var(--bg2);border:1px solid var(--border);color:var(--muted);
+  padding:8px 18px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;
+  transition:all .2s;font-family:var(--fb);}
+.fbtn:hover{border-color:rgba(255,45,120,.3);color:var(--white);}
+.fbtn.active{background:var(--pink);border-color:var(--pink);color:#fff;}
+
+/* BRAND GRID */
+.brand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.bcard{background:var(--bg2);border:1px solid var(--border);border-radius:20px;
+  overflow:hidden;cursor:pointer;
+  transition:transform .25s,border-color .25s,box-shadow .25s;position:relative;}
+.bcard:hover{transform:translateY(-6px);border-color:rgba(255,45,120,.3);
+  box-shadow:0 20px 48px rgba(0,0,0,.5);}
+
+/* Thumb */
+.bthumb{width:100%;aspect-ratio:16/9;display:flex;align-items:center;
+  justify-content:center;font-size:54px;position:relative;overflow:hidden;}
+.bthumb::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.7) 100%);}
+.bbadge{position:absolute;top:10px;left:10px;z-index:2;
+  font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;font-family:var(--fh);}
+.bh{background:var(--pink);color:#fff;}
+.bt{background:var(--yellow);color:var(--bg);}
+.bn{background:var(--cyan);color:var(--bg);}
+.bvid{position:absolute;bottom:10px;right:10px;z-index:2;
+  display:flex;align-items:center;gap:5px;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+  padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;}
+.bvid .vdot{width:5px;height:5px;border-radius:50%;background:var(--pink);animation:pulse 1.5s infinite;}
+
+/* Card body */
+.cbody{padding:16px;}
+.brow{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.bname{font-family:var(--fh);font-size:17px;font-weight:800;display:flex;align-items:center;gap:5px;}
+.bverif{width:16px;height:16px;border-radius:50%;background:var(--cyan);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--bg);font-weight:700;}
+.bcomm{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--pink);}
+.bcat{font-size:12px;color:var(--muted);margin-bottom:8px;}
+.bdesc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
+.bstats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+  padding:10px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:12px;}
+.bsv{font-family:var(--fh);font-size:13px;font-weight:700;text-align:center;}
+.bsl{font-size:10px;color:var(--muted);text-align:center;margin-top:1px;}
+.shopbtn{display:flex;align-items:center;justify-content:space-between;width:100%;
+  background:linear-gradient(135deg,rgba(255,45,120,.12),rgba(255,45,120,.06));
+  border:1px solid rgba(255,45,120,.25);color:var(--white);
+  padding:10px 14px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;
+  transition:background .2s,transform .15s;font-family:var(--fh);}
+.shopbtn:hover{background:var(--pink);transform:scale(1.01);}
+
+/* GENERATOR */
+.gen-section{padding:80px 24px;background:var(--bg2);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.gen-inner{max-width:720px;margin:0 auto;text-align:center;}
+.gen-card{background:var(--bg3);border:1px solid rgba(0,245,212,.2);
+  border-radius:24px;padding:36px;margin-top:32px;position:relative;overflow:hidden;}
+.gen-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--pink),var(--cyan));}
+.gen-lbl{font-family:var(--fh);font-size:12px;font-weight:700;color:var(--cyan);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px;text-align:left;}
+.grow{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.ginput{flex:1;min-width:160px;background:var(--bg);border:1px solid var(--border);
+  border-radius:12px;padding:12px 15px;color:var(--white);font-family:var(--fb);
+  font-size:14px;outline:none;transition:border-color .2s;}
+.ginput::placeholder{color:var(--muted);}
+.ginput:focus{border-color:rgba(0,245,212,.4);}
+.gsel{background:var(--bg);border:1px solid var(--border);border-radius:12px;
+  padding:12px 15px;color:var(--white);font-family:var(--fb);
+  font-size:14px;outline:none;cursor:pointer;min-width:140px;}
+.gbtn{width:100%;background:linear-gradient(135deg,var(--pink),#ff6060);color:#fff;
+  border:none;cursor:pointer;padding:14px;border-radius:12px;
+  font-family:var(--fh);font-size:15px;font-weight:700;margin-top:6px;
+  transition:opacity .2s,transform .15s;}
+.gbtn:hover{opacity:.9;transform:translateY(-1px);}
+.gresult{margin-top:14px;background:var(--bg);border:1px solid rgba(0,245,212,.3);
+  border-radius:12px;padding:12px 16px;display:none;
+  align-items:center;justify-content:space-between;gap:10px;}
+.gresult.show{display:flex;}
+.gurl{font-size:12px;color:var(--cyan);word-break:break-all;flex:1;font-family:'Courier New',monospace;}
+.copybtn{background:rgba(0,245,212,.12);border:1px solid rgba(0,245,212,.3);
+  color:var(--cyan);padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;
+  cursor:pointer;white-space:nowrap;font-family:var(--fb);}
+.copybtn:hover{background:rgba(0,245,212,.22);}
+.gnote{font-size:11px;color:var(--muted);margin-top:10px;}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.88);
+  backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:20px;}
+.overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid rgba(255,45,120,.2);border-radius:24px;
+  max-width:560px;width:100%;max-height:92vh;overflow-y:auto;
+  animation:fadeUp .3s ease both;position:relative;}
+.mhero{width:100%;height:170px;display:flex;align-items:center;justify-content:center;
+  font-size:68px;border-radius:24px 24px 0 0;position:relative;}
+.mx{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;
+  background:rgba(0,0,0,.5);border:1px solid var(--border);color:var(--white);
+  font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.mbody{padding:26px;}
+.mtop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px;}
+.mname{font-family:var(--fh);font-size:24px;font-weight:800;}
+.mcomm{font-family:var(--fh);font-size:18px;font-weight:800;color:var(--pink);}
+.mcat{font-size:12px;color:var(--muted);margin-bottom:16px;}
+.mstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;}
+.ms{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:13px;text-align:center;}
+.msv{font-family:var(--fh);font-size:18px;font-weight:800;margin-bottom:3px;}
+.msl{font-size:10px;color:var(--muted);}
+.mdesc{font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:16px;}
+.mtags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+.mtag{background:var(--bg3);border:1px solid var(--border);color:var(--muted);
+  padding:4px 11px;border-radius:100px;font-size:11px;font-weight:600;}
+.visit-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  background:linear-gradient(135deg,var(--pink),#ff6060);color:#fff;border:none;
+  padding:14px;border-radius:14px;font-family:var(--fh);font-size:14px;font-weight:700;
+  cursor:pointer;margin-bottom:8px;transition:opacity .2s,transform .15s;}
+.visit-btn:hover{opacity:.9;transform:translateY(-1px);}
+.gen-modal-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  background:rgba(0,245,212,.1);border:1px solid rgba(0,245,212,.3);color:var(--cyan);
+  padding:12px;border-radius:14px;font-family:var(--fh);font-size:13px;font-weight:700;
+  cursor:pointer;transition:background .2s;}
+.gen-modal-btn:hover{background:rgba(0,245,212,.2);}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:36px 32px 24px;}
+.ft{display:flex;align-items:flex-start;justify-content:space-between;gap:32px;
+  max-width:1200px;margin:0 auto 24px;flex-wrap:wrap;}
+.fb .fn{font-family:var(--fh);font-size:19px;font-weight:800;margin-bottom:8px;}
+.fb p{font-size:13px;color:var(--muted);line-height:1.7;max-width:240px;}
+.fcols{display:flex;gap:48px;flex-wrap:wrap;}
+.fcol h4{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:12px;}
+.fcol ul{list-style:none;}
+.fcol li{margin-bottom:8px;}
+.fcol a{font-size:13px;color:var(--muted);transition:color .2s;}
+.fcol a:hover{color:var(--white);}
+.fb-bot{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;
+  padding-top:18px;border-top:1px solid var(--border);
+  font-size:12px;color:var(--muted);flex-wrap:wrap;gap:8px;}
+
+/* RESPONSIVE */
+@media(max-width:900px){.brand-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:580px){
+  nav{padding:12px 16px;}
+  .brand-grid{grid-template-columns:1fr 1fr;}
+  .grow{flex-direction:column;}
+  .ft{flex-direction:column;}
+}
+@media(max-width:380px){.brand-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo"><span class="at">@</span>YourName <span class="logo-dot"></span></div>
+  <a href="https://tiktok.com/@yourname" target="_blank" class="nav-tiktok">♪ Follow on TikTok</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="avatar-wrap" style="animation:fadeUp .6s ease both;">
+    <div class="avatar">🎯</div>
+    <div class="avatar-live">LIVE</div>
+  </div>
+  <h1 class="creator-name" style="animation:fadeUp .6s .1s ease both;">My TikTok Picks</h1>
+  <div class="creator-handle" style="animation:fadeUp .6s .15s ease both;">@YourName</div>
+  <p class="creator-bio" style="animation:fadeUp .6s .2s ease both;">
+    Semua brand yang sudah saya review dan rekomendasikan di TikTok. Produk yang saya percaya, pakai sendiri, dan layak untuk kamu coba! 🔥
+  </p>
+  <div class="social-stats" style="animation:fadeUp .6s .25s ease both;">
+    <div class="sstat"><div class="num" style="color:var(--pink)">1.2M</div><div class="lbl">Followers</div></div>
+    <div class="sstat"><div class="num" style="color:var(--cyan)">48.5M</div><div class="lbl">Total Likes</div></div>
+    <div class="sstat"><div class="num" style="color:var(--yellow)">8.3%</div><div class="lbl">Engagement</div></div>
+    <div class="sstat"><div class="num">9</div><div class="lbl">Partner Brands</div></div>
+  </div>
+  <div class="hero-btns" style="animation:fadeUp .6s .3s ease both;">
+    <a href="#brands" class="btn-p">🛍️ Lihat Brand Rekomendasi</a>
+    <a href="#generator" class="btn-o">⚡ Affiliate Link Generator</a>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="mq-wrap">
+  <div class="mq-track">
+    <div class="mq-item">👗 Fashion<span class="mq-sep"> · </span></div>
+    <div class="mq-item">💄 Beauty<span class="mq-sep"> · </span></div>
+    <div class="mq-item">📱 Tech<span class="mq-sep"> · </span></div>
+    <div class="mq-item">🏋️ Fitness<span class="mq-sep"> · </span></div>
+    <div class="mq-item">🍔 Food<span class="mq-sep"> · </span></div>
+    <div class="mq-item">🏠 Home<span class="mq-sep"> · </span></div>
+    <div class="mq-item">✈️ Travel<span class="mq-sep"> · </span></div>
+    <div class="mq-item">🎮 Gaming<span class="mq-sep"> · </span></div>
+    <div class="mq-item">👗 Fashion<span class="mq-sep"> · </span></div>
+    <div class="mq-item">💄 Beauty<span class="mq-sep"> · </span></div>
+    <div class="mq-item">📱 Tech<span class="mq-sep"> · </span></div>
+    <div class="mq-item">🏋️ Fitness<span class="mq-sep"> · </span></div>
+    <div class="mq-item">🍔 Food<span class="mq-sep"> · </span></div>
+    <div class="mq-item">🏠 Home<span class="mq-sep"> · </span></div>
+    <div class="mq-item">✈️ Travel<span class="mq-sep"> · </span></div>
+    <div class="mq-item">🎮 Gaming<span class="mq-sep"> · </span></div>
+  </div>
+</div>
+
+<!-- BRAND SHOWCASE -->
+<section class="sec" id="brands">
+  <div class="sec-tag">Rekomendasi Saya</div>
+  <h2 class="sec-title">Brand yang Sudah Saya <span>Review & Rekomendasikan</span></h2>
+
+  <div class="filters">
+    <button class="fbtn active" onclick="filterBrands('all',this)">🔥 Semua</button>
+    <button class="fbtn" onclick="filterBrands('fashion',this)">👗 Fashion</button>
+    <button class="fbtn" onclick="filterBrands('beauty',this)">💄 Beauty</button>
+    <button class="fbtn" onclick="filterBrands('tech',this)">📱 Tech</button>
+    <button class="fbtn" onclick="filterBrands('fitness',this)">🏋️ Fitness</button>
+    <button class="fbtn" onclick="filterBrands('food',this)">🍔 Food</button>
+    <button class="fbtn" onclick="filterBrands('home',this)">🏠 Home</button>
+  </div>
+
+  <div class="brand-grid" id="brandGrid">
+
+    <!-- ZARA -->
+    <div class="bcard" data-cat="fashion" onclick="openModal('zara')">
+      <div class="bthumb" style="background:linear-gradient(135deg,#1a1a2e,#2d2d4e);">👗
+        <div class="bbadge bh">🔥 HOT</div>
+        <div class="bvid"><span class="vdot"></span>12 Videos</div>
+      </div>
+      <div class="cbody">
+        <div class="brow"><div class="bname">Zara <span class="bverif">✓</span></div><div class="bcomm">15% komisi</div></div>
+        <div class="bcat">👗 Fashion & Apparel</div>
+        <p class="bdesc">Brand fashion favorit saya untuk konten OOTD & haul video. Koleksinya selalu trendy!</p>
+        <div class="bstats">
+          <div><div class="bsv" style="color:var(--pink)">15%</div><div class="bsl">Komisi</div></div>
+          <div><div class="bsv">30d</div><div class="bsl">Cookie</div></div>
+          <div><div class="bsv" style="color:var(--yellow)">★4.8</div><div class="bsl">Rating</div></div>
+        </div>
+        <button class="shopbtn"><span>🛍️ Kunjungi Zara</span><span>→</span></button>
+      </div>
+    </div>
+
+    <!-- SEPHORA -->
+    <div class="bcard" data-cat="beauty" onclick="openModal('sephora')">
+      <div class="bthumb" style="background:linear-gradient(135deg,#1f0a1f,#3d1a3d);">💄
+        <div class="bbadge bt">⭐ TOP</div>
+        <div class="bvid"><span class="vdot"></span>18 Videos</div>
+      </div>
+      <div class="cbody">
+        <div class="brow"><div class="bname">Sephora <span class="bverif">✓</span></div><div class="bcomm">20% komisi</div></div>
+        <div class="bcat">💄 Beauty & Makeup</div>
+        <p class="bdesc">Surga beauty saya! Semua produk makeup & skincare di video tutorial bisa ditemukan di sini.</p>
+        <div class="bstats">
+          <div><div class="bsv" style="color:var(--pink)">20%</div><div class="bsl">Komisi</div></div>
+          <div><div class="bsv">30d</div><div class="bsl">Cookie</div></div>
+          <div><div class="bsv" style="color:var(--yellow)">★4.9</div><div class="bsl">Rating</div></div>
+        </div>
+        <button class="shopbtn"><span>💄 Kunjungi Sephora</span><span>→</span></button>
+      </div>
+    </div>
+
+    <!-- GYMSHARK -->
+    <div class="bcard" data-cat="fitness" onclick="openModal('gymshark')">
+      <div class="bthumb" style="background:linear-gradient(135deg,#0a1a0a,#1a3a1a);">🏋️
+        <div class="bbadge bh">🔥 HOT</div>
+        <div class="bvid"><span class="vdot"></span>22 Videos</div>
+      </div>
+      <div class="cbody">
+        <div class="brow"><div class="bname">Gymshark <span class="bverif">✓</span></div><div class="bcomm">25% komisi</div></div>
+        <div class="bcat">🏋️ Fitness & Sports</div>
+        <p class="bdesc">Semua gym outfit di video workout saya adalah Gymshark. Kualitas luar biasa, tampilan kece!</p>
+        <div class="bstats">
+          <div><div class="bsv" style="color:var(--pink)">25%</div><div class="bsl">Komisi</div></div>
+          <div><div class="bsv">30d</div><div class="bsl">Cookie</div></div>
+          <div><div class="bsv" style="color:var(--yellow)">★4.9</div><div class="bsl">Rating</div></div>
+        </div>
+        <button class="shopbtn"><span>🏋️ Kunjungi Gymshark</span><span>→</span></button>
+      </div>
+    </div>
+
+    <!-- SAMSUNG -->
+    <div class="bcard" data-cat="tech" onclick="openModal('samsung')">
+      <div class="bthumb" style="background:linear-gradient(135deg,#0a1628,#1a2a4e);">📱
+        <div class="bbadge bn">✨ NEW</div>
+        <div class="bvid"><span class="vdot"></span>9 Videos</div>
+      </div>
+      <div class="cbody">
+        <div class="brow"><div class="bname">Samsung <span class="bverif">✓</span></div><div class="bcomm">8% komisi</div></div>
+        <div class="bcat">📱 Tech & Electronics</div>
+        <p class="bdesc">Gadget pilihan saya untuk syuting konten TikTok. Samsung Galaxy = footage terbaik!</p>
+        <div class="bstats">
+          <div><div class="bsv" style="color:var(--cyan)">8%</div><div class="bsl">Komisi</div></div>
+          <div><div class="bsv">14d</div><div class="bsl">Cookie</div></div>
+          <div><div class="bsv" style="color:var(--yellow)">★4.7</div><div class="bsl">Rating</div></div>
+        </div>
+        <button class="shopbtn"><span>📱 Kunjungi Samsung</span><span>→</span></button>
+      </div>
+    </div>
+
+    <!-- CERAVE -->
+    <div class="bcard" data-cat="beauty" onclick="openModal('cerave')">
+      <div class="bthumb" style="background:linear-gradient(135deg,#0a1a2a,#1a3a4e);">🧴
+        <div class="bbadge bt">⭐ TOP</div>
+        <div class="bvid"><span class="vdot"></span>15 Videos</div>
+      </div>
+      <div class="cbody">
+        <div class="brow"><div class="bname">CeraVe <span class="bverif">✓</span></div><div class="bcomm">18% komisi</div></div>
+        <div class="bcat">💄 Skincare</div>
+        <p class="bdesc">Skincare routine saya dimulai dari CeraVe. Sudah 2 tahun pakai dan kulit makin bagus!</p>
+        <div class="bstats">
+          <div><div class="bsv" style="color:var(--cyan)">18%</div><div class="bsl">Komisi</div></div>
+          <div><div class="bsv">21d</div><div class="bsl">Cookie</div></div>
+          <div><div class="bsv" style="color:var(--yellow)">★4.8</div><div class="bsl">Rating</div></div>
+        </div>
+        <button class="shopbtn"><span>🧴 Kunjungi CeraVe</span><span>→</span></button>
+      </div>
+    </div>
+
+    <!-- HELLOFRESH -->
+    <div class="bcard" data-cat="food" onclick="openModal('hellofresh')">
+      <div class="bthumb" style="background:linear-gradient(135deg,#2a0a0a,#4e1a1a);">🍔
+        <div class="bbadge bn">✨ NEW</div>
+        <div class="bvid"><span class="vdot"></span>7 Videos</div>
+      </div>
+      <div class="cbody">
+        <div class="brow"><div class="bname">HelloFresh <span class="bverif">✓</span></div><div class="bcomm">30% komisi</div></div>
+        <div class="bcat">🍔 Food & Cooking</div>
+        <p class="bdesc">Meal kit terbaik yang pernah saya coba! Masak jadi mudah dan hasilnya selalu enak.</p>
+        <div class="bstats">
+          <div><div class="bsv" style="color:var(--pink)">30%</div><div class="bsl">Komisi</div></div>
+          <div><div class="bsv">30d</div><div class="bsl">Cookie</div></div>
+          <div><div class="bsv" style="color:var(--yellow)">★4.6</div><div class="bsl">Rating</div></div>
+        </div>
+        <button class="shopbtn"><span>🍔 Kunjungi HelloFresh</span><span>→</span></button>
+      </div>
+    </div>
+
+    <!-- IKEA -->
+    <div class="bcard" data-cat="home" onclick="openModal('ikea')">
+      <div class="bthumb" style="background:linear-gradient(135deg,#1a1a0a,#3a3a1a);">🏠
+        <div class="bbadge bh">🔥 HOT</div>
+        <div class="bvid"><span class="vdot"></span>11 Videos</div>
+      </div>
+      <div class="cbody">
+        <div class="brow"><div class="bname">IKEA <span class="bverif">✓</span></div><div class="bcomm">12% komisi</div></div>
+        <div class="bcat">🏠 Home & Living</div>
+        <p class="bdesc">Room transformation saya pakai IKEA semua! Aesthetic banget, harga super terjangkau.</p>
+        <div class="bstats">
+          <div><div class="bsv" style="color:var(--pink)">12%</div><div class="bsl">Komisi</div></div>
+          <div><div class="bsv">30d</div><div class="bsl">Cookie</div></div>
+          <div><div class="bsv" style="color:var(--yellow)">★4.5</div><div class="bsl">Rating</div></div>
+        </div>
+        <button class="shopbtn"><span>🏠 Kunjungi IKEA</span><span>→</span></button>
+      </div>
+    </div>
+
+    <!-- NIKE -->
+    <div class="bcard" data-cat="fashion" onclick="openModal('nike')">
+      <div class="bthumb" style="background:linear-gradient(135deg,#1a0a0a,#2a1212);">👟
+        <div class="bbadge bt">⭐ TOP</div>
+        <div class="bvid"><span class="vdot"></span>19 Videos</div>
+      </div>
+      <div class="cbody">
+        <div class="brow"><div class="bname">Nike <span class="bverif">✓</span></div><div class="bcomm">11% komisi</div></div>
+        <div class="bcat">👗 Footwear & Sports</div>
+        <p class="bdesc">Sneaker koleksi saya mostly Nike. Comfort, style, dan kualitas terbaik — no doubt!</p>
+        <div class="bstats">
+          <div><div class="bsv" style="color:var(--cyan)">11%</div><div class="bsl">Komisi</div></div>
+          <div><div class="bsv">30d</div><div class="bsl">Cookie</div></div>
+          <div><div class="bsv" style="color:var(--yellow)">★4.9</div><div class="bsl">Rating</div></div>
+        </div>
+        <button class="shopbtn"><span>👟 Kunjungi Nike</span><span>→</span></button>
+      </div>
+    </div>
+
+    <!-- APPLE -->
+    <div class="bcard" data-cat="tech" onclick="openModal('apple')">
+      <div class="bthumb" style="background:linear-gradient(135deg,#1a1a1a,#2a2a2a);">🎧
+        <div class="bbadge bh">🔥 HOT</div>
+        <div class="bvid"><span class="vdot"></span>14 Videos</div>
+      </div>
+      <div class="cbody">
+        <div class="brow"><div class="bname">Apple <span class="bverif">✓</span></div><div class="bcomm">5% komisi</div></div>
+        <div class="bcat">📱 Tech & Audio</div>
+        <p class="bdesc">AirPods yang saya pakai tiap hari buat rekam konten. Sound quality-nya unbeatable!</p>
+        <div class="bstats">
+          <div><div class="bsv" style="color:var(--cyan)">5%</div><div class="bsl">Komisi</div></div>
+          <div><div class="bsv">7d</div><div class="bsl">Cookie</div></div>
+          <div><div class="bsv" style="color:var(--yellow)">★5.0</div><div class="bsl">Rating</div></div>
+        </div>
+        <button class="shopbtn"><span>🎧 Kunjungi Apple</span><span>→</span></button>
+      </div>
+    </div>
+
+  </div><!-- /brand-grid -->
+</section>
+
+<!-- AFFILIATE LINK GENERATOR -->
+<div class="gen-section" id="generator">
+  <div class="gen-inner">
+    <div class="sec-tag" style="justify-content:center;">Tool Pribadi</div>
+    <h2 class="sec-title" style="margin-bottom:8px;">⚡ Affiliate <span>Link Generator</span></h2>
+    <p style="color:var(--muted);font-size:15px;">Paste URL produk dari brand manapun dan generate affiliate link-mu dalam detik.</p>
+    <div class="gen-card">
+      <div class="gen-lbl">🔗 Format & Simpan Affiliate Link</div>
+
+      <!-- Platform badges -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;">
+        <span style="background:rgba(255,45,120,.15);border:1px solid rgba(255,45,120,.3);color:#ff2d78;padding:5px 12px;border-radius:100px;font-size:12px;font-weight:700;">♪ TikTok Shop</span>
+        <span style="background:rgba(238,77,45,.15);border:1px solid rgba(238,77,45,.3);color:#ee4d2d;padding:5px 12px;border-radius:100px;font-size:12px;font-weight:700;">🛒 Shopee</span>
+        <span style="background:rgba(66,181,73,.15);border:1px solid rgba(66,181,73,.3);color:#42b549;padding:5px 12px;border-radius:100px;font-size:12px;font-weight:700;">🏪 Tokopedia</span>
+      </div>
+
+      <div class="grow">
+        <input type="text" class="ginput" id="genUrl"
+          placeholder="Paste affiliate link (shope.ee/xxx · vt.tiktok.com/xxx · tokopedia.link/xxx)">
+      </div>
+      <div class="grow">
+        <input type="text" class="ginput" id="genUser" placeholder="Username TikTok kamu (@yourname)">
+        <select class="gsel" id="genCat">
+          <option value="fashion">👗 Fashion</option>
+          <option value="beauty">💄 Beauty</option>
+          <option value="tech">📱 Tech</option>
+          <option value="fitness">🏋️ Fitness</option>
+          <option value="food">🍔 Food</option>
+          <option value="home">🏠 Home</option>
+          <option value="other">✨ Other</option>
+        </select>
+      </div>
+      <button class="gbtn" onclick="generateLink()">⚡ Generate My Affiliate Link</button>
+
+      <div class="gresult" id="genResult">
+        <span class="gurl" id="genUrl2"></span>
+        <button class="copybtn" onclick="copyLink()">📋 Copy</button>
+      </div>
+      <p id="platInfo" style="display:none;font-size:12px;color:var(--cyan);margin-top:10px;text-align:left;"></p>
+      <p class="gnote">✅ Tracking dilakukan otomatis oleh platform (Shopee/TikTok/Tokopedia) — tidak perlu backend!</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="brandModal" onclick="closeOutside(event)">
+  <div class="modal" id="modalEl">
+    <div class="mhero" id="mHero">
+      <button class="mx" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="mtop">
+        <div><div class="mname" id="mName"></div><div class="mcat" id="mCat"></div></div>
+        <div class="mcomm" id="mComm"></div>
+      </div>
+      <div class="mstats" id="mStats"></div>
+      <p class="mdesc" id="mDesc"></p>
+      <div class="mtags" id="mTags"></div>
+      <button class="visit-btn" onclick="visitBrand()">🛍️ Kunjungi Website Brand →</button>
+      <button class="gen-modal-btn" onclick="goGenerate()">⚡ Generate Affiliate Link untuk Brand Ini</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft">
+    <div class="fb">
+      <div class="fn"><span style="color:var(--pink)">@</span>YourName</div>
+      <p>Brand recommendations dari saya — semua yang sudah saya review, pakai, dan percaya. Setiap link adalah affiliate link saya.</p>
+    </div>
+    <div class="fcols">
+      <div class="fcol">
+        <h4>Kategori</h4>
+        <ul>
+          <li><a href="#brands">Fashion</a></li>
+          <li><a href="#brands">Beauty</a></li>
+          <li><a href="#brands">Tech</a></li>
+          <li><a href="#brands">Fitness</a></li>
+          <li><a href="#brands">Food</a></li>
+          <li><a href="#brands">Home</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h4>Links</h4>
+        <ul>
+          <li><a href="#generator">⚡ Affiliate Generator</a></li>
+          <li><a href="https://tiktok.com/@yourname" target="_blank">♪ TikTok Channel</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="fb-bot">
+    <span>© 2026 @YourName · Personal affiliate page.</span>
+    <span>⚠ Disclosure: Saya mendapat komisi dari setiap pembelian melalui link ini.</span>
+  </div>
+</footer>
+
+<script>
+// ─────────────────────────────────────────────────────────
+// BRAND DATA
+// Ganti nilai 'affUrl' dengan affiliate link asli Anda dari:
+//   TikTok Shop → copy link produk dari app TikTok
+//   Shopee      → https://affiliate.shopee.co.id → generate link
+//   Tokopedia   → https://affiliate.tokopedia.com → generate link
+// Contoh: affUrl: 'https://shope.ee/XXXXXXX'
+//         affUrl: 'https://vt.tiktok.com/XXXXXXX/'
+//         affUrl: 'https://tokopedia.link/XXXXXXX'
+// ─────────────────────────────────────────────────────────
+const BD = {
+  zara:      {emoji:'👗',bg:'linear-gradient(135deg,#1a1a2e,#2d2d4e)',name:'Zara',cat:'👗 Fashion & Apparel',comm:'15% komisi',cookie:'30 hari',rating:'4.8/5',
+    platform:'shopee',
+    affUrl:'https://shope.ee/GANTI_LINK_ZARA_ANDA',        // ← ganti dengan link Shopee/TikTok Anda
+    url:'https://www.zara.com',
+    desc:'Zara adalah brand fashion favorit saya untuk konten OOTD dan haul video. Kualitas materialnya sangat bagus dan koleksinya selalu up-to-date!',tags:['#OOTD','#ZaraHaul','#FashionTok','#StyleInspo','#WomenFashion']},
+
+  sephora:   {emoji:'💄',bg:'linear-gradient(135deg,#1f0a1f,#3d1a3d)',name:'Sephora',cat:'💄 Beauty & Makeup',comm:'20% komisi',cookie:'30 hari',rating:'4.9/5',
+    platform:'shopee',
+    affUrl:'https://shope.ee/GANTI_LINK_SEPHORA_ANDA',     // ← ganti
+    url:'https://www.sephora.com',
+    desc:'Surga beauty saya! Semua produk makeup dan skincare di video tutorial bisa ditemukan di sini.',tags:['#BeautyTok','#Sephora','#MakeupTutorial','#SkincareRoutine','#GlowUp']},
+
+  gymshark:  {emoji:'🏋️',bg:'linear-gradient(135deg,#0a1a0a,#1a3a1a)',name:'Gymshark',cat:'🏋️ Fitness & Sports',comm:'25% komisi',cookie:'30 hari',rating:'4.9/5',
+    platform:'tiktok',
+    affUrl:'https://vt.tiktok.com/GANTI_LINK_GYMSHARK_ANDA', // ← ganti
+    url:'https://www.gymshark.com',
+    desc:'Brand fitness no.1 pilihan saya! Semua gym outfit di video workout TikTok saya adalah Gymshark.',tags:['#FitTok','#Gymshark','#GymOutfit','#WorkoutMotivation','#FitnessLife']},
+
+  samsung:   {emoji:'📱',bg:'linear-gradient(135deg,#0a1628,#1a2a4e)',name:'Samsung',cat:'📱 Tech & Electronics',comm:'8% komisi',cookie:'14 hari',rating:'4.7/5',
+    platform:'tokopedia',
+    affUrl:'https://tokopedia.link/GANTI_LINK_SAMSUNG_ANDA', // ← ganti
+    url:'https://www.samsung.com',
+    desc:'Samsung Galaxy adalah kamera utama saya untuk syuting konten TikTok! Video quality-nya sangat bagus.',tags:['#TechTok','#Samsung','#GadgetReview','#Unboxing','#TechTips']},
+
+  cerave:    {emoji:'🧴',bg:'linear-gradient(135deg,#0a1a2a,#1a3a4e)',name:'CeraVe',cat:'💄 Skincare',comm:'18% komisi',cookie:'21 hari',rating:'4.8/5',
+    platform:'shopee',
+    affUrl:'https://shope.ee/GANTI_LINK_CERAVE_ANDA',       // ← ganti
+    url:'https://www.cerave.com',
+    desc:'CeraVe adalah pondasi skincare routine saya sejak 2 tahun lalu. Dermatologis pun merekomendasikannya!',tags:['#SkinTok','#CeraVe','#SkincareRoutine','#CleanBeauty','#GlassySkin']},
+
+  hellofresh:{emoji:'🍔',bg:'linear-gradient(135deg,#2a0a0a,#4e1a1a)',name:'HelloFresh',cat:'🍔 Food & Cooking',comm:'30% komisi',cookie:'30 hari',rating:'4.6/5',
+    platform:'tiktok',
+    affUrl:'https://vt.tiktok.com/GANTI_LINK_HELLOFRESH_ANDA', // ← ganti
+    url:'https://www.hellofresh.com',
+    desc:'Meal kit terbaik yang pernah saya coba! Masak jadi mudah dan hasilnya selalu enak.',tags:['#FoodTok','#HelloFresh','#MealPrep','#EasyRecipe','#CookingTok']},
+
+  ikea:      {emoji:'🏠',bg:'linear-gradient(135deg,#1a1a0a,#3a3a1a)',name:'IKEA',cat:'🏠 Home & Living',comm:'12% komisi',cookie:'30 hari',rating:'4.5/5',
+    platform:'tokopedia',
+    affUrl:'https://tokopedia.link/GANTI_LINK_IKEA_ANDA',   // ← ganti
+    url:'https://www.ikea.com',
+    desc:'Room transformation videos saya selalu pakai produk IKEA. Aesthetic banget, harga super terjangkau!',tags:['#HomeTok','#IKEAHack','#RoomTour','#HomeDecor','#ApartmentGoals']},
+
+  nike:      {emoji:'👟',bg:'linear-gradient(135deg,#1a0a0a,#2a1212)',name:'Nike',cat:'👗 Footwear & Sports',comm:'11% komisi',cookie:'30 hari',rating:'4.9/5',
+    platform:'shopee',
+    affUrl:'https://shope.ee/GANTI_LINK_NIKE_ANDA',         // ← ganti
+    url:'https://www.nike.com',
+    desc:'Nike sudah jadi bagian dari daily style saya. Sneaker haul dan outfit video saya selalu ada Nike!',tags:['#NikeTok','#SneakerHead','#NikeOutfit','#Sneakers','#JustDoIt']},
+
+  apple:     {emoji:'🎧',bg:'linear-gradient(135deg,#1a1a1a,#2a2a2a)',name:'Apple',cat:'📱 Tech & Audio',comm:'5% komisi',cookie:'7 hari',rating:'5.0/5',
+    platform:'tokopedia',
+    affUrl:'https://tokopedia.link/GANTI_LINK_APPLE_ANDA',  // ← ganti
+    url:'https://www.apple.com',
+    desc:'AirPods Pro saya pakai tiap hari buat rekam konten. Noise cancellation-nya luar biasa!',tags:['#AirPods','#Apple','#TechTok','#AudioQuality','#iPhoneLife']}
+};
+
+// Platform badge helper
+const PLATFORM_BADGE = {
+  tiktok:    { label:'TikTok Shop', color:'#ff2d78', icon:'♪' },
+  shopee:    { label:'Shopee',      color:'#ee4d2d', icon:'🛒' },
+  tokopedia: { label:'Tokopedia',   color:'#42b549', icon:'🏪' },
+};
+
+let currentAffUrl = '';
+let currentBrandId = '';
+
+// ── Filter ────────────────────────────────────────
+function filterBrands(cat, btn) {
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.bcard').forEach((c,i)=>{
+    const show = cat==='all' || c.dataset.cat===cat;
+    c.style.display = show ? 'block' : 'none';
+    if(show){ c.style.opacity='0'; c.style.animation='none';
+      setTimeout(()=>{ c.style.animation=`fadeUp .4s ${i*.05}s ease forwards`; },10); }
+  });
+}
+
+// ── Modal ─────────────────────────────────────────
+function openModal(id) {
+  const b = BD[id]; if(!b) return;
+  currentAffUrl  = b.affUrl;
+  currentBrandId = id;
+  const plat = PLATFORM_BADGE[b.platform] || PLATFORM_BADGE.shopee;
+
+  document.getElementById('mHero').innerHTML =
+    `<button class="mx" onclick="closeModal()">✕</button>
+     <span style="font-size:68px">${b.emoji}</span>
+     <span style="position:absolute;bottom:14px;left:14px;background:${plat.color};
+       color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;
+       font-family:var(--fh)">${plat.icon} ${plat.label}</span>`;
+  document.getElementById('mHero').style.background = b.bg;
+  document.getElementById('mName').textContent = b.name;
+  document.getElementById('mCat').textContent  = b.cat;
+  document.getElementById('mComm').textContent = b.comm;
+  document.getElementById('mStats').innerHTML = `
+    <div class="ms"><div class="msv" style="color:var(--pink)">${b.comm.split(' ')[0]}</div><div class="msl">Komisi</div></div>
+    <div class="ms"><div class="msv" style="color:var(--cyan)">${b.cookie}</div><div class="msl">Cookie</div></div>
+    <div class="ms"><div class="msv" style="color:var(--yellow)">★${b.rating}</div><div class="msl">Rating Saya</div></div>`;
+  document.getElementById('mDesc').textContent = b.desc;
+  document.getElementById('mTags').innerHTML = b.tags.map(t=>`<span class="mtag">${t}</span>`).join('');
+  document.getElementById('brandModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  // pre-fill generator dengan affiliate link asli
+  document.getElementById('genUrl').value = b.affUrl;
+}
+
+// Tombol "Kunjungi" → buka affiliate link langsung
+function visitBrand(){
+  const b = BD[currentBrandId];
+  // Jika affiliate link sudah diisi (bukan placeholder), buka affiliate link
+  // Jika belum, buka website resmi brand
+  const target = (b.affUrl && !b.affUrl.includes('GANTI_LINK')) ? b.affUrl : b.url;
+  window.open(target,'_blank');
+}
+function closeModal(){ document.getElementById('brandModal').classList.remove('open'); document.body.style.overflow=''; }
+function closeOutside(e){ if(e.target===document.getElementById('brandModal')) closeModal(); }
+function goGenerate(){ closeModal(); document.getElementById('generator').scrollIntoView({behavior:'smooth'}); }
+
+// ── Affiliate Link Generator ──────────────────────
+// Generator ini membantu Anda mem-format / menyimpan affiliate link
+// yang sudah Anda miliki dari Shopee/TikTok/Tokopedia
+function generateLink(){
+  const url  = document.getElementById('genUrl').value.trim();
+  const user = document.getElementById('genUser').value.trim().replace('@','');
+  if(!url){ flashErr('Paste affiliate link dari Shopee/TikTok/Tokopedia!'); return; }
+  if(!user){ flashErr('Isi username TikTok kamu!'); return; }
+
+  // Deteksi platform dari URL
+  let platform = 'custom';
+  if(url.includes('shope.ee') || url.includes('shopee'))    platform = 'shopee';
+  else if(url.includes('tiktok') || url.includes('vt.tik')) platform = 'tiktok';
+  else if(url.includes('tokopedia'))                         platform = 'tokopedia';
+
+  // Format final link (tambah UTM untuk tracking personal)
+  let finalUrl = url;
+  try {
+    const u = new URL(url.startsWith('http') ? url : 'https://'+url);
+    u.searchParams.set('utm_source','tiktok');
+    u.searchParams.set('utm_medium','bio');
+    u.searchParams.set('utm_campaign', user);
+    finalUrl = u.toString();
+  } catch(e){ finalUrl = url; }
+
+  document.getElementById('genUrl2').textContent = finalUrl;
+
+  // Tampilkan info platform
+  const platInfo = {
+    shopee:    '🛒 Shopee Affiliate — tracking otomatis oleh Shopee',
+    tiktok:    '♪ TikTok Shop — tracking otomatis oleh TikTok',
+    tokopedia: '🏪 Tokopedia Affiliate — tracking otomatis oleh Tokopedia',
+    custom:    '🔗 Custom link — pastikan sudah punya affiliate ID dari platform',
+  };
+  document.getElementById('platInfo').textContent = platInfo[platform];
+  document.getElementById('platInfo').style.display = 'block';
+
+  const r = document.getElementById('genResult');
+  r.classList.add('show');
+  r.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function flashErr(msg){
+  const b=document.querySelector('.gbtn');
+  b.style.background='#ff4444'; b.textContent='⚠ '+msg;
+  setTimeout(()=>{ b.style.background=''; b.textContent='⚡ Generate My Affiliate Link'; },2500);
+}
+function copyLink(){
+  navigator.clipboard.writeText(document.getElementById('genUrl2').textContent).then(()=>{
+    const b=document.querySelector('.copybtn'); b.textContent='✅ Tersalin!';
+    setTimeout(()=>b.textContent='📋 Copy',2000);
+  });
+}
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{ if(e.isIntersecting){ e.target.style.animation=`fadeUp .5s ${i*.06}s ease both`; obs.unobserve(e.target); }});
+},{threshold:.1});
+document.querySelectorAll('.bcard').forEach(el=>{ el.style.opacity='0'; obs.observe(el); });
+</script>
+</body>
+</html>
