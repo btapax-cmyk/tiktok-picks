@@ -767,10 +767,710 @@ function copyLink(){
   });
 }
 
-const obs=new IntersectionObserver(entries=>{
+<script>
+// ═══════════════════════════════════════════════════════════
+// DEFAULT BRAND DATA (akan diganti jika ada data di storage)
+// ═══════════════════════════════════════════════════════════
+const DEFAULT_BRANDS = [
+  {id:'brand_1',emoji:'👗',name:'Zara',cat:'fashion',catLabel:'👗 Fashion',comm:'15',cookie:'30',rating:'4.8',platform:'shopee',affUrl:'',url:'https://www.zara.com',desc:'Brand fashion favorit saya untuk konten OOTD & haul video. Koleksinya selalu trendy!',tags:'#OOTD,#ZaraHaul,#FashionTok',badge:'hot',videos:'12',bg:'linear-gradient(135deg,#1a1a2e,#2d2d4e)'},
+  {id:'brand_2',emoji:'💄',name:'Sephora',cat:'beauty',catLabel:'💄 Beauty',comm:'20',cookie:'30',rating:'4.9',platform:'shopee',affUrl:'',url:'https://www.sephora.com',desc:'Surga beauty saya! Semua produk makeup & skincare ada di sini.',tags:'#BeautyTok,#Sephora,#MakeupTutorial',badge:'top',videos:'18',bg:'linear-gradient(135deg,#1f0a1f,#3d1a3d)'},
+  {id:'brand_3',emoji:'🏋️',name:'Gymshark',cat:'fitness',catLabel:'🏋️ Fitness',comm:'25',cookie:'30',rating:'4.9',platform:'tiktok',affUrl:'',url:'https://www.gymshark.com',desc:'Semua gym outfit di video workout saya adalah Gymshark. Kualitas luar biasa!',tags:'#FitTok,#Gymshark,#GymOutfit',badge:'hot',videos:'22',bg:'linear-gradient(135deg,#0a1a0a,#1a3a1a)'},
+];
+
+const PLATFORM_BADGE = {
+  tiktok:    {label:'TikTok Shop', color:'#ff2d78', icon:'♪'},
+  shopee:    {label:'Shopee',      color:'#ee4d2d', icon:'🛒'},
+  tokopedia: {label:'Tokopedia',   color:'#42b549', icon:'🏪'},
+  custom:    {label:'Custom',      color:'#7c7c99', icon:'🔗'},
+};
+
+const CAT_OPTIONS = [
+  {val:'fashion',  label:'👗 Fashion'},
+  {val:'beauty',   label:'💄 Beauty'},
+  {val:'tech',     label:'📱 Tech'},
+  {val:'fitness',  label:'🏋️ Fitness'},
+  {val:'food',     label:'🍔 Food'},
+  {val:'home',     label:'🏠 Home'},
+  {val:'gaming',   label:'🎮 Gaming'},
+  {val:'other',    label:'✨ Other'},
+];
+
+const BG_OPTIONS = [
+  'linear-gradient(135deg,#1a1a2e,#2d2d4e)',
+  'linear-gradient(135deg,#1f0a1f,#3d1a3d)',
+  'linear-gradient(135deg,#0a1a0a,#1a3a1a)',
+  'linear-gradient(135deg,#0a1628,#1a2a4e)',
+  'linear-gradient(135deg,#0a1a2a,#1a3a4e)',
+  'linear-gradient(135deg,#2a0a0a,#4e1a1a)',
+  'linear-gradient(135deg,#1a1a0a,#3a3a1a)',
+  'linear-gradient(135deg,#1a0a0a,#2a1212)',
+  'linear-gradient(135deg,#1a1a1a,#2a2a2a)',
+  'linear-gradient(135deg,#0a1a1a,#1a3a3a)',
+];
+
+// ── Load brands from localStorage ────────────────────────
+function loadBrands() {
+  try {
+    const saved = localStorage.getItem('tikaf_brands');
+    return saved ? JSON.parse(saved) : DEFAULT_BRANDS;
+  } catch(e) { return DEFAULT_BRANDS; }
+}
+function saveBrands(brands) {
+  localStorage.setItem('tikaf_brands', JSON.stringify(brands));
+}
+function loadSettings() {
+  try {
+    const s = localStorage.getItem('tikaf_settings');
+    return s ? JSON.parse(s) : {name:'@YourName', bio:'Semua brand yang sudah saya review dan rekomendasikan di TikTok.', followers:'1.2M', likes:'48.5M', engagement:'8.3%', tiktokUrl:'https://tiktok.com/@yourname'};
+  } catch(e) { return {}; }
+}
+function saveSettings(s) { localStorage.setItem('tikaf_settings', JSON.stringify(s)); }
+
+let BRANDS = loadBrands();
+let currentAffUrl = '';
+let currentBrandIdx = -1;
+let editingIdx = -1;
+
+// ── Render all brand cards ────────────────────────────────
+function renderBrands(filterCat) {
+  const grid = document.getElementById('brandGrid');
+  const cat  = filterCat || 'all';
+  const list = BRANDS.filter(b => cat === 'all' || b.cat === cat);
+
+  if(list.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 24px;color:var(--muted);">
+      <div style="font-size:48px;margin-bottom:16px;">📭</div>
+      <p style="font-size:16px;">Belum ada brand di kategori ini.</p>
+      <button onclick="openAdminPanel()" style="margin-top:16px;background:var(--pink);color:#fff;border:none;padding:10px 24px;border-radius:100px;cursor:pointer;font-family:var(--fh);font-weight:700;font-size:14px;">+ Tambah Brand</button>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map((b, i) => {
+    const plat = PLATFORM_BADGE[b.platform] || PLATFORM_BADGE.custom;
+    const badgeHtml = b.badge === 'hot' ? `<div class="bbadge bh">🔥 HOT</div>`
+                    : b.badge === 'top' ? `<div class="bbadge bt">⭐ TOP</div>`
+                    : b.badge === 'new' ? `<div class="bbadge bn">✨ NEW</div>` : '';
+    const realIdx = BRANDS.indexOf(b);
+    return `
+    <div class="bcard" data-cat="${b.cat}" onclick="openModal(${realIdx})">
+      <div class="bthumb" style="background:${b.bg}">${b.emoji}
+        ${badgeHtml}
+        <div class="bvid"><span class="vdot"></span>${b.videos||'0'} Videos</div>
+      </div>
+      <div class="cbody">
+        <div class="brow">
+          <div class="bname">${b.name} <span class="bverif">✓</span></div>
+          <div class="bcomm">${b.comm}% komisi</div>
+        </div>
+        <div class="bcat">${b.catLabel||b.cat}</div>
+        <p class="bdesc">${b.desc||''}</p>
+        <div class="bstats">
+          <div><div class="bsv" style="color:var(--pink)">${b.comm}%</div><div class="bsl">Komisi</div></div>
+          <div><div class="bsv">${b.cookie}d</div><div class="bsl">Cookie</div></div>
+          <div><div class="bsv" style="color:var(--yellow)">★${b.rating}</div><div class="bsl">Rating</div></div>
+        </div>
+        <button class="shopbtn"><span>🛍️ Kunjungi ${b.name}</span><span>→</span></button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // re-observe
+  document.querySelectorAll('.bcard').forEach(el=>{ el.style.opacity='0'; obs.observe(el); });
+}
+
+// ── Filter ────────────────────────────────────────────────
+let currentFilter = 'all';
+function filterBrands(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBrands(cat);
+}
+
+// ── Modal ─────────────────────────────────────────────────
+function openModal(idx) {
+  const b = BRANDS[idx]; if(!b) return;
+  currentAffUrl  = b.affUrl || b.url;
+  currentBrandIdx = idx;
+  const plat = PLATFORM_BADGE[b.platform] || PLATFORM_BADGE.custom;
+  document.getElementById('mHero').innerHTML =
+    `<button class="mx" onclick="closeModal()">✕</button>
+     <span style="font-size:68px">${b.emoji}</span>
+     <span style="position:absolute;bottom:14px;left:14px;background:${plat.color};
+       color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;
+       font-family:var(--fh)">${plat.icon} ${plat.label}</span>`;
+  document.getElementById('mHero').style.background = b.bg;
+  document.getElementById('mName').textContent  = b.name;
+  document.getElementById('mCat').textContent   = b.catLabel || b.cat;
+  document.getElementById('mComm').textContent  = b.comm + '% komisi';
+  document.getElementById('mStats').innerHTML   = `
+    <div class="ms"><div class="msv" style="color:var(--pink)">${b.comm}%</div><div class="msl">Komisi</div></div>
+    <div class="ms"><div class="msv" style="color:var(--cyan)">${b.cookie} hari</div><div class="msl">Cookie</div></div>
+    <div class="ms"><div class="msv" style="color:var(--yellow)">★${b.rating}</div><div class="msl">Rating Saya</div></div>`;
+  document.getElementById('mDesc').textContent  = b.desc || '';
+  const tags = (b.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
+  document.getElementById('mTags').innerHTML    = tags.map(t=>`<span class="mtag">${t}</span>`).join('');
+  document.getElementById('brandModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('genUrl').value = b.affUrl || '';
+}
+function visitBrand(){
+  const b = BRANDS[currentBrandIdx];
+  const target = (b.affUrl && b.affUrl.startsWith('http')) ? b.affUrl : (b.url || '#');
+  window.open(target,'_blank');
+}
+function closeModal(){ document.getElementById('brandModal').classList.remove('open'); document.body.style.overflow=''; }
+function closeOutside(e){ if(e.target===document.getElementById('brandModal')) closeModal(); }
+function goGenerate(){ closeModal(); document.getElementById('generator').scrollIntoView({behavior:'smooth'}); }
+
+// ── Affiliate Link Generator ──────────────────────────────
+function generateLink(){
+  const url  = document.getElementById('genUrl').value.trim();
+  const user = document.getElementById('genUser').value.trim().replace('@','');
+  if(!url){ flashErr('Paste affiliate link dari Shopee/TikTok/Tokopedia!'); return; }
+  if(!user){ flashErr('Isi username TikTok kamu!'); return; }
+  let platform = 'custom';
+  if(url.includes('shope.ee')||url.includes('shopee')) platform='shopee';
+  else if(url.includes('tiktok')||url.includes('vt.tik')) platform='tiktok';
+  else if(url.includes('tokopedia')) platform='tokopedia';
+  let finalUrl = url;
+  try {
+    const u = new URL(url.startsWith('http')?url:'https://'+url);
+    u.searchParams.set('utm_source','tiktok');
+    u.searchParams.set('utm_medium','bio');
+    u.searchParams.set('utm_campaign', user);
+    finalUrl = u.toString();
+  } catch(e){ finalUrl = url; }
+  document.getElementById('genUrl2').textContent = finalUrl;
+  const platInfo = {shopee:'🛒 Shopee Affiliate — tracking otomatis',tiktok:'♪ TikTok Shop — tracking otomatis',tokopedia:'🏪 Tokopedia — tracking otomatis',custom:'🔗 Custom link'};
+  document.getElementById('platInfo').textContent = platInfo[platform];
+  document.getElementById('platInfo').style.display='block';
+  document.getElementById('genResult').classList.add('show');
+  document.getElementById('genResult').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function flashErr(msg){
+  const b=document.querySelector('.gbtn');
+  b.style.background='#ff4444'; b.textContent='⚠ '+msg;
+  setTimeout(()=>{ b.style.background=''; b.textContent='⚡ Generate My Affiliate Link'; },2500);
+}
+function copyLink(){
+  navigator.clipboard.writeText(document.getElementById('genUrl2').textContent).then(()=>{
+    const b=document.querySelector('.copybtn'); b.textContent='✅ Tersalin!';
+    setTimeout(()=>b.textContent='📋 Copy',2000);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// ADMIN PANEL
+// ════════════════════════════════════════════════════════════
+let adminUnlocked = false;
+const ADMIN_PASS  = '1234'; // ← ganti password admin Anda
+
+function openAdminPanel(){
+  if(!adminUnlocked){
+    const pw = prompt('🔐 Masukkan password admin:');
+    if(pw !== ADMIN_PASS){ alert('Password salah!'); return; }
+    adminUnlocked = true;
+  }
+  renderAdminList();
+  document.getElementById('adminPanel').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeAdmin(){
+  document.getElementById('adminPanel').classList.remove('open');
+  document.getElementById('adminForm').classList.remove('open');
+  document.body.style.overflow='';
+  editingIdx = -1;
+}
+
+// ── Admin brand list ──────────────────────────────────────
+function renderAdminList(){
+  const list = document.getElementById('adminBrandList');
+  list.innerHTML = BRANDS.length === 0
+    ? `<p style="color:var(--muted);text-align:center;padding:24px;">Belum ada brand. Klik "+ Tambah Brand Baru".</p>`
+    : BRANDS.map((b,i) => `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;
+        background:var(--bg3);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;">
+        <span style="font-size:28px;width:40px;text-align:center;">${b.emoji}</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:var(--fh);font-weight:700;font-size:15px;">${b.name}</div>
+          <div style="font-size:12px;color:var(--muted);">${b.catLabel||b.cat} · ${b.comm}% komisi · ${b.affUrl && b.affUrl.startsWith('http') ? '<span style="color:var(--cyan)">✓ Link set</span>' : '<span style="color:#ff4444;">✗ Link belum diisi</span>'}</div>
+        </div>
+        <button onclick="editBrand(${i})" style="background:rgba(0,245,212,.12);border:1px solid rgba(0,245,212,.3);color:var(--cyan);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fb);">Edit</button>
+        <button onclick="deleteBrand(${i})" style="background:rgba(255,45,120,.12);border:1px solid rgba(255,45,120,.3);color:var(--pink);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fb);">Hapus</button>
+      </div>`).join('');
+}
+
+// ── Add / Edit brand ──────────────────────────────────────
+function addNewBrand(){
+  editingIdx = -1;
+  resetForm();
+  document.getElementById('formTitle').textContent = '+ Tambah Brand Baru';
+  document.getElementById('adminPanel').classList.remove('open');
+  document.getElementById('adminForm').classList.add('open');
+}
+function editBrand(i){
+  editingIdx = i;
+  const b = BRANDS[i];
+  document.getElementById('formTitle').textContent = 'Edit Brand: ' + b.name;
+  document.getElementById('fEmoji').value    = b.emoji   || '';
+  document.getElementById('fName').value     = b.name    || '';
+  document.getElementById('fCat').value      = b.cat     || 'fashion';
+  document.getElementById('fComm').value     = b.comm    || '';
+  document.getElementById('fCookie').value   = b.cookie  || '30';
+  document.getElementById('fRating').value   = b.rating  || '4.5';
+  document.getElementById('fPlatform').value = b.platform|| 'shopee';
+  document.getElementById('fAffUrl').value   = b.affUrl  || '';
+  document.getElementById('fUrl').value      = b.url     || '';
+  document.getElementById('fDesc').value     = b.desc    || '';
+  document.getElementById('fTags').value     = b.tags    || '';
+  document.getElementById('fVideos').value   = b.videos  || '0';
+  document.getElementById('fBadge').value    = b.badge   || 'none';
+  document.getElementById('fBg').value       = b.bg      || BG_OPTIONS[0];
+  updateBgPreview();
+  document.getElementById('adminPanel').classList.remove('open');
+  document.getElementById('adminForm').classList.add('open');
+}
+function resetForm(){
+  ['fEmoji','fName','fComm','fAffUrl','fUrl','fDesc','fTags'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fCat').value      = 'fashion';
+  document.getElementById('fCookie').value   = '30';
+  document.getElementById('fRating').value   = '4.5';
+  document.getElementById('fPlatform').value = 'shopee';
+  document.getElementById('fVideos').value   = '0';
+  document.getElementById('fBadge').value    = 'none';
+  document.getElementById('fBg').value       = BG_OPTIONS[0];
+  updateBgPreview();
+}
+function saveBrandForm(){
+  const name   = document.getElementById('fName').value.trim();
+  const affUrl = document.getElementById('fAffUrl').value.trim();
+  if(!name){ alert('Nama brand wajib diisi!'); return; }
+
+  const catVal   = document.getElementById('fCat').value;
+  const catObj   = CAT_OPTIONS.find(c=>c.val===catVal) || {label:catVal};
+
+  const brand = {
+    id:        editingIdx >= 0 ? BRANDS[editingIdx].id : 'brand_'+Date.now(),
+    emoji:     document.getElementById('fEmoji').value.trim() || '🛍️',
+    name,
+    cat:       catVal,
+    catLabel:  catObj.label,
+    comm:      document.getElementById('fComm').value.trim()     || '0',
+    cookie:    document.getElementById('fCookie').value.trim()   || '30',
+    rating:    document.getElementById('fRating').value.trim()   || '4.5',
+    platform:  document.getElementById('fPlatform').value,
+    affUrl,
+    url:       document.getElementById('fUrl').value.trim(),
+    desc:      document.getElementById('fDesc').value.trim(),
+    tags:      document.getElementById('fTags').value.trim(),
+    videos:    document.getElementById('fVideos').value.trim()   || '0',
+    badge:     document.getElementById('fBadge').value,
+    bg:        document.getElementById('fBg').value,
+  };
+
+  if(editingIdx >= 0) BRANDS[editingIdx] = brand;
+  else BRANDS.push(brand);
+
+  saveBrands(BRANDS);
+  renderBrands(currentFilter);
+  document.getElementById('adminForm').classList.remove('open');
+  document.getElementById('adminPanel').classList.add('open');
+  renderAdminList();
+  editingIdx = -1;
+}
+function backToList(){
+  document.getElementById('adminForm').classList.remove('open');
+  document.getElementById('adminPanel').classList.add('open');
+}
+function deleteBrand(i){
+  if(!confirm(`Hapus brand "${BRANDS[i].name}"?`)) return;
+  BRANDS.splice(i,1);
+  saveBrands(BRANDS);
+  renderBrands(currentFilter);
+  renderAdminList();
+}
+function resetAllBrands(){
+  if(!confirm('Reset semua brand ke data awal? Semua perubahan akan hilang!')) return;
+  BRANDS = JSON.parse(JSON.stringify(DEFAULT_BRANDS));
+  saveBrands(BRANDS);
+  renderBrands(currentFilter);
+  renderAdminList();
+}
+function updateBgPreview(){
+  const bg = document.getElementById('fBg').value;
+  document.getElementById('bgPreview').style.background = bg;
+}
+
+// ── Profile settings ──────────────────────────────────────
+function saveProfileSettings(){
+  const s = {
+    name:       document.getElementById('sName').value.trim()       || '@YourName',
+    bio:        document.getElementById('sBio').value.trim(),
+    followers:  document.getElementById('sFollowers').value.trim()  || '0',
+    likes:      document.getElementById('sLikes').value.trim()      || '0',
+    engagement: document.getElementById('sEngagement').value.trim() || '0%',
+    tiktokUrl:  document.getElementById('sTiktokUrl').value.trim(),
+  };
+  saveSettings(s);
+  applySettings(s);
+  alert('✅ Profil tersimpan!');
+}
+function applySettings(s){
+  // Update display
+  const els = {
+    '.creator-handle': s.name,
+    '.creator-name':   'My TikTok Picks',
+  };
+  const handle = document.querySelector('.creator-handle');
+  if(handle) handle.textContent = s.name;
+  const bio = document.querySelector('.creator-bio');
+  if(bio) bio.textContent = s.bio;
+  const stats = document.querySelectorAll('.sstat .num');
+  if(stats[0]) stats[0].textContent = s.followers;
+  if(stats[1]) stats[1].textContent = s.likes;
+  if(stats[2]) stats[2].textContent = s.engagement;
+  const tiktokLinks = document.querySelectorAll('.nav-tiktok, .fcol a[href*="tiktok"]');
+  tiktokLinks.forEach(a=>{ if(s.tiktokUrl) a.href = s.tiktokUrl; });
+  const logoEl = document.querySelector('.logo');
+  if(logoEl) logoEl.innerHTML = `<span class="at">@</span>${s.name.replace('@','')} <span class="logo-dot"></span>`;
+}
+function loadAndApplySettings(){
+  const s = loadSettings();
+  // pre-fill settings form
+  document.getElementById('sName').value       = s.name       || '';
+  document.getElementById('sBio').value        = s.bio        || '';
+  document.getElementById('sFollowers').value  = s.followers  || '';
+  document.getElementById('sLikes').value      = s.likes      || '';
+  document.getElementById('sEngagement').value = s.engagement || '';
+  document.getElementById('sTiktokUrl').value  = s.tiktokUrl  || '';
+  applySettings(s);
+}
+
+// ── Init ──────────────────────────────────────────────────
+const obs = new IntersectionObserver(entries=>{
   entries.forEach((e,i)=>{ if(e.isIntersecting){ e.target.style.animation=`fadeUp .5s ${i*.06}s ease both`; obs.unobserve(e.target); }});
 },{threshold:.1});
-document.querySelectorAll('.bcard').forEach(el=>{ el.style.opacity='0'; obs.observe(el); });
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  renderBrands('all');
+  loadAndApplySettings();
+});
+
+// Secret admin shortcut: ketik "admin" di mana saja
+let adminTyped = '';
+document.addEventListener('keydown', e=>{
+  adminTyped += e.key.toLowerCase();
+  if(adminTyped.includes('admin')){ adminTyped=''; openAdminPanel(); }
+  if(adminTyped.length > 10) adminTyped = adminTyped.slice(-10);
+});
 </script>
-</body>
-</html>
+
+<!-- ═══════════════════════════════════════════════════════
+     ADMIN PANEL OVERLAY
+═══════════════════════════════════════════════════════ -->
+<div id="adminPanel" style="position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);
+  backdrop-filter:blur(12px);display:none;flex-direction:column;overflow-y:auto;">
+  <div id="adminPanel" style="display:none;"></div>
+</div>
+
+<style>
+/* Admin shared */
+.ap-wrap{max-width:700px;margin:0 auto;padding:32px 24px;}
+.ap-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+.ap-title{font-family:var(--fh);font-size:22px;font-weight:800;}
+.ap-close{background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--white);
+  width:36px;height:36px;border-radius:50%;font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;}
+.ap-close:hover{background:rgba(255,45,120,.2);}
+.ap-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:100px;
+  font-family:var(--fh);font-size:14px;font-weight:700;cursor:pointer;border:none;transition:opacity .2s;}
+.ap-btn:hover{opacity:.85;}
+.ap-btn-pink{background:var(--pink);color:#fff;}
+.ap-btn-cyan{background:rgba(0,245,212,.15);border:1px solid rgba(0,245,212,.3)!important;color:var(--cyan);}
+.ap-btn-red{background:rgba(255,45,120,.12);border:1px solid rgba(255,45,120,.3)!important;color:var(--pink);}
+
+/* Form fields */
+.f-row{margin-bottom:16px;}
+.f-label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:6px;display:block;}
+.f-input,.f-select,.f-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:10px;padding:11px 14px;color:var(--white);font-family:var(--fb);
+  font-size:14px;outline:none;transition:border-color .2s;}
+.f-input:focus,.f-select:focus,.f-textarea:focus{border-color:rgba(0,245,212,.4);}
+.f-input::placeholder,.f-textarea::placeholder{color:var(--muted);}
+.f-textarea{resize:vertical;min-height:80px;line-height:1.6;}
+.f-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.f-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+
+/* Tabs */
+.ap-tabs{display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:16px;}
+.ap-tab{background:none;border:none;color:var(--muted);font-size:14px;font-weight:600;
+  cursor:pointer;padding:8px 16px;border-radius:8px;font-family:var(--fb);}
+.ap-tab.active{background:rgba(255,45,120,.12);color:var(--pink);}
+
+#adminPanelEl,#adminFormEl{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);
+  backdrop-filter:blur(12px);display:none;overflow-y:auto;}
+#adminPanelEl.open,#adminFormEl.open{display:block;}
+
+.save-fab{position:fixed;bottom:24px;right:24px;z-index:700;
+  background:var(--pink);color:#fff;border:none;border-radius:100px;
+  padding:14px 28px;font-family:var(--fh);font-size:15px;font-weight:700;
+  cursor:pointer;box-shadow:0 8px 24px rgba(255,45,120,.4);
+  transition:transform .2s,box-shadow .2s;}
+.save-fab:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(255,45,120,.6);}
+</style>
+
+<!-- ADMIN PANEL MAIN -->
+<div id="adminPanelEl">
+  <div class="ap-wrap">
+    <div class="ap-hdr">
+      <div class="ap-title">⚙️ Admin Panel</div>
+      <button class="ap-close" onclick="closeAdmin()">✕</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="ap-tabs">
+      <button class="ap-tab active" onclick="switchTab('brands',this)">🛍️ Kelola Brand</button>
+      <button class="ap-tab" onclick="switchTab('profile',this)">👤 Profil Saya</button>
+    </div>
+
+    <!-- Tab: Brands -->
+    <div id="tabBrands">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+        <p style="font-size:14px;color:var(--muted);">Total: <strong style="color:var(--white)" id="brandCount">0</strong> brand</p>
+        <div style="display:flex;gap:8px;">
+          <button class="ap-btn ap-btn-red" onclick="resetAllBrands()" style="border:1px solid rgba(255,45,120,.3)">🔄 Reset</button>
+          <button class="ap-btn ap-btn-pink" onclick="addNewBrand()">+ Tambah Brand Baru</button>
+        </div>
+      </div>
+      <div id="adminBrandList"></div>
+    </div>
+
+    <!-- Tab: Profile -->
+    <div id="tabProfile" style="display:none;">
+      <div class="f-row">
+        <label class="f-label">Username TikTok</label>
+        <input class="f-input" id="sName" placeholder="@yourname">
+      </div>
+      <div class="f-row">
+        <label class="f-label">Bio / Deskripsi</label>
+        <textarea class="f-textarea" id="sBio" placeholder="Deskripsi singkat tentang kamu..."></textarea>
+      </div>
+      <div class="f-grid3">
+        <div class="f-row">
+          <label class="f-label">Followers</label>
+          <input class="f-input" id="sFollowers" placeholder="1.2M">
+        </div>
+        <div class="f-row">
+          <label class="f-label">Total Likes</label>
+          <input class="f-input" id="sLikes" placeholder="48.5M">
+        </div>
+        <div class="f-row">
+          <label class="f-label">Engagement</label>
+          <input class="f-input" id="sEngagement" placeholder="8.3%">
+        </div>
+      </div>
+      <div class="f-row">
+        <label class="f-label">URL TikTok Kamu</label>
+        <input class="f-input" id="sTiktokUrl" placeholder="https://tiktok.com/@yourname">
+      </div>
+      <button class="ap-btn ap-btn-pink" style="width:100%;justify-content:center;padding:14px;" onclick="saveProfileSettings()">💾 Simpan Profil</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN FORM (Add/Edit Brand) -->
+<div id="adminFormEl">
+  <div class="ap-wrap">
+    <div class="ap-hdr">
+      <div class="ap-title" id="formTitle">+ Tambah Brand Baru</div>
+      <button class="ap-close" onclick="backToList()">←</button>
+    </div>
+
+    <!-- Basic Info -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;">
+      <p style="font-size:12px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;">📋 Informasi Brand</p>
+      <div class="f-grid2">
+        <div class="f-row">
+          <label class="f-label">Emoji Brand</label>
+          <input class="f-input" id="fEmoji" placeholder="👗" maxlength="4">
+        </div>
+        <div class="f-row">
+          <label class="f-label">Nama Brand *</label>
+          <input class="f-input" id="fName" placeholder="e.g. Zara">
+        </div>
+      </div>
+      <div class="f-grid2">
+        <div class="f-row">
+          <label class="f-label">Kategori</label>
+          <select class="f-select" id="fCat">
+            <option value="fashion">👗 Fashion</option>
+            <option value="beauty">💄 Beauty</option>
+            <option value="tech">📱 Tech</option>
+            <option value="fitness">🏋️ Fitness</option>
+            <option value="food">🍔 Food</option>
+            <option value="home">🏠 Home</option>
+            <option value="gaming">🎮 Gaming</option>
+            <option value="other">✨ Other</option>
+          </select>
+        </div>
+        <div class="f-row">
+          <label class="f-label">Badge</label>
+          <select class="f-select" id="fBadge">
+            <option value="none">— Tidak ada</option>
+            <option value="hot">🔥 HOT</option>
+            <option value="top">⭐ TOP</option>
+            <option value="new">✨ NEW</option>
+          </select>
+        </div>
+      </div>
+      <div class="f-row">
+        <label class="f-label">Deskripsi Singkat</label>
+        <textarea class="f-textarea" id="fDesc" placeholder="Ceritakan pengalamanmu dengan brand ini..."></textarea>
+      </div>
+      <div class="f-row">
+        <label class="f-label">Hashtag (pisah dengan koma)</label>
+        <input class="f-input" id="fTags" placeholder="#OOTD, #FashionTok, #Haul">
+      </div>
+    </div>
+
+    <!-- Affiliate Info -->
+    <div style="background:var(--bg2);border:1px solid rgba(0,245,212,.2);border-radius:14px;padding:20px;margin-bottom:16px;">
+      <p style="font-size:12px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;">🔗 Affiliate Link</p>
+      <div class="f-row">
+        <label class="f-label">Platform Affiliate</label>
+        <select class="f-select" id="fPlatform">
+          <option value="tiktok">♪ TikTok Shop</option>
+          <option value="shopee">🛒 Shopee Affiliate</option>
+          <option value="tokopedia">🏪 Tokopedia Affiliate</option>
+          <option value="custom">🔗 Custom / Lainnya</option>
+        </select>
+      </div>
+      <div class="f-row">
+        <label class="f-label">Affiliate Link (dari Shopee/TikTok/Tokopedia)</label>
+        <input class="f-input" id="fAffUrl" placeholder="https://shope.ee/xxx  atau  https://vt.tiktok.com/xxx">
+      </div>
+      <div class="f-row">
+        <label class="f-label">Website Resmi Brand (backup jika link belum ada)</label>
+        <input class="f-input" id="fUrl" placeholder="https://www.namabrand.com">
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;">
+      <p style="font-size:12px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;">📊 Statistik & Tampilan</p>
+      <div class="f-grid3">
+        <div class="f-row">
+          <label class="f-label">Komisi (%)</label>
+          <input class="f-input" id="fComm" placeholder="15" type="number" min="0" max="100">
+        </div>
+        <div class="f-row">
+          <label class="f-label">Cookie (hari)</label>
+          <input class="f-input" id="fCookie" placeholder="30" type="number" min="1">
+        </div>
+        <div class="f-row">
+          <label class="f-label">Rating (1-5)</label>
+          <input class="f-input" id="fRating" placeholder="4.5" step="0.1" type="number" min="1" max="5">
+        </div>
+      </div>
+      <div class="f-row">
+        <label class="f-label">Jumlah Video TikTok tentang Brand Ini</label>
+        <input class="f-input" id="fVideos" placeholder="12" type="number" min="0">
+      </div>
+      <div class="f-row">
+        <label class="f-label">Warna Card (pilih atau ketik gradient)</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+          ${BG_OPTIONS.map(bg=>`<div onclick="document.getElementById('fBg').value='${bg}';updateBgPreview();"
+            style="width:36px;height:36px;border-radius:8px;cursor:pointer;background:${bg};
+            border:2px solid transparent;transition:border-color .2s;"
+            onmouseover="this.style.borderColor='var(--cyan)'"
+            onmouseout="this.style.borderColor='transparent'"></div>`).join('')}
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <input class="f-input" id="fBg" oninput="updateBgPreview()" placeholder="linear-gradient(...)">
+          <div id="bgPreview" style="width:48px;height:48px;border-radius:10px;flex-shrink:0;border:1px solid var(--border);"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="save-fab" onclick="saveBrandForm()">💾 Simpan Brand</button>
+    <div style="height:80px;"></div>
+  </div>
+</div>
+
+<script>
+// Tab switching
+function switchTab(tab, btn){
+  document.querySelectorAll('.ap-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tabBrands').style.display  = tab==='brands'  ? 'block' : 'none';
+  document.getElementById('tabProfile').style.display = tab==='profile' ? 'block' : 'none';
+}
+
+// Override openAdminPanel to update count
+const _origOpen = openAdminPanel;
+function openAdminPanel(){
+  if(!adminUnlocked){
+    const pw = prompt('🔐 Masukkan password admin:');
+    if(pw !== ADMIN_PASS){ alert('Password salah!'); return; }
+    adminUnlocked = true;
+  }
+  document.getElementById('brandCount').textContent = BRANDS.length;
+  renderAdminList();
+  loadAndApplySettings();
+  document.getElementById('adminPanelEl').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeAdmin(){
+  document.getElementById('adminPanelEl').classList.remove('open');
+  document.getElementById('adminFormEl').classList.remove('open');
+  document.body.style.overflow='';
+  editingIdx=-1;
+}
+function addNewBrand(){
+  editingIdx=-1; resetForm();
+  document.getElementById('formTitle').textContent='+ Tambah Brand Baru';
+  document.getElementById('adminPanelEl').classList.remove('open');
+  document.getElementById('adminFormEl').classList.add('open');
+}
+function editBrand(i){
+  editingIdx=i;
+  const b=BRANDS[i];
+  document.getElementById('formTitle').textContent='Edit: '+b.name;
+  document.getElementById('fEmoji').value   =b.emoji   ||'';
+  document.getElementById('fName').value    =b.name    ||'';
+  document.getElementById('fCat').value     =b.cat     ||'fashion';
+  document.getElementById('fComm').value    =b.comm    ||'';
+  document.getElementById('fCookie').value  =b.cookie  ||'30';
+  document.getElementById('fRating').value  =b.rating  ||'4.5';
+  document.getElementById('fPlatform').value=b.platform||'shopee';
+  document.getElementById('fAffUrl').value  =b.affUrl  ||'';
+  document.getElementById('fUrl').value     =b.url     ||'';
+  document.getElementById('fDesc').value    =b.desc    ||'';
+  document.getElementById('fTags').value    =b.tags    ||'';
+  document.getElementById('fVideos').value  =b.videos  ||'0';
+  document.getElementById('fBadge').value   =b.badge   ||'none';
+  document.getElementById('fBg').value      =b.bg      ||BG_OPTIONS[0];
+  updateBgPreview();
+  document.getElementById('adminPanelEl').classList.remove('open');
+  document.getElementById('adminFormEl').classList.add('open');
+}
+function backToList(){
+  document.getElementById('adminFormEl').classList.remove('open');
+  document.getElementById('adminPanelEl').classList.add('open');
+  document.getElementById('brandCount').textContent=BRANDS.length;
+  renderAdminList();
+}
+</script>
+
+<!-- Admin trigger button (fixed, bottom-left) -->
+<button onclick="openAdminPanel()" title="Admin Panel"
+  style="position:fixed;bottom:24px;left:24px;z-index:400;
+  background:rgba(255,45,120,.15);border:1px solid rgba(255,45,120,.3);
+  color:var(--pink);width:44px;height:44px;border-radius:50%;
+  font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);transition:background .2s;"
+  onmouseover="this.style.background='rgba(255,45,120,.3)'"
+  onmouseout="this.style.background='rgba(255,45,120,.15)'">⚙️</button>
