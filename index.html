@@ -555,7 +555,7 @@ function applySettings(){
   if(nums[1])nums[1].textContent=s.likes||'0';
   if(nums[2])nums[2].textContent=s.engagement||'0%';
   const logo=document.querySelector('.logo');
-  if(logo)logo.innerHTML=`<span class="at">@</span>${(s.name||'YourName').replace('@','')} <span class="logo-dot"></span>`;
+  if(logo)logo.innerHTML=`<span class="at">@</span>${(s.name||'zeiz666').replace('@','')} <span class="logo-dot"></span>`;
   document.querySelectorAll('.footer-tiktok-link,.nav-tiktok').forEach(a=>{if(s.tiktokUrl)a.href=s.tiktokUrl;});
 }
 
