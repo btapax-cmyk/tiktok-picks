@@ -103,7 +103,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 32px;
 .bcard:hover{transform:translateY(-6px);border-color:rgba(255,45,120,.3);
   box-shadow:0 20px 48px rgba(0,0,0,.5);}
 .bthumb{width:100%;aspect-ratio:16/9;display:flex;align-items:center;
-  justify-content:center;font-size:54px;position:relative;overflow:hidden;}
+  justify-content:center;font-size:54px;position:relative;overflow:hidden;background:#111118;}
 .bthumb::after{content:'';position:absolute;inset:0;
   background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.7) 100%);}
 .bbadge{position:absolute;top:10px;left:10px;z-index:2;
@@ -475,7 +475,10 @@ function renderBrands(cat){
                 : b.badge==='new' ? `<div class="bbadge bn">✨ NEW</div>` : '';
     return `
     <div class="bcard" data-cat="${b.cat}" onclick="openModal(${idx})">
-      <div class="bthumb" style="background:${b.bg||'#1a1a2e'}">${b.emoji||'🛍️'}
+      <div class="bthumb" style="background:${b.bg||'#111118'}">
+        ${b.imageUrl
+          ? `<img src="${b.imageUrl}" alt="${b.name}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">`
+          : `<span style="font-size:52px">🛍️</span>`}
         ${badge}
         <div class="bvid"><span class="vdot"></span>${b.videos||'0'} Videos</div>
       </div>
@@ -512,13 +515,16 @@ window.openModal = function(idx){
   const b = BRANDS[idx]; if(!b) return;
   currentBrandIdx = idx;
   const plat = PLATFORM_BADGE[b.platform] || PLATFORM_BADGE.custom;
+  const heroContent = b.imageUrl
+    ? `<img src="${b.imageUrl}" alt="${b.name}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:24px 24px 0 0;">`
+    : `<span style="font-size:68px">🛍️</span>`;
   document.getElementById('mHero').innerHTML =
     `<button class="mx" onclick="closeModal()">✕</button>
-     <span style="font-size:68px">${b.emoji||'🛍️'}</span>
+     ${heroContent}
      <span style="position:absolute;bottom:14px;left:14px;background:${plat.color};
        color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;
-       font-family:var(--fh)">${plat.icon} ${plat.label}</span>`;
-  document.getElementById('mHero').style.background = b.bg||'#1a1a2e';
+       font-family:var(--fh);z-index:2">${plat.icon} ${plat.label}</span>`;
+  document.getElementById('mHero').style.background = b.imageUrl ? '#111118' : (b.bg||'#1a1a2e');
   document.getElementById('mName').textContent  = b.name;
   document.getElementById('mCat').textContent   = b.catLabel||b.cat;
   document.getElementById('mComm').textContent  = b.comm+'% komisi';
