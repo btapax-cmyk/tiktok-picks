@@ -96,14 +96,25 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 32px;
 .fbtn.active{background:var(--pink);border-color:var(--pink);color:#fff;}
 
 /* BRAND GRID */
-.brand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
-.bcard{background:var(--bg2);border:1px solid var(--border);border-radius:20px;
+.brand-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+  align-items:stretch;
+}
+/* Card — flex column agar konsisten tingginya */
+.bcard{
+  background:var(--bg2);border:1px solid var(--border);border-radius:20px;
   overflow:hidden;cursor:pointer;
-  transition:transform .25s,border-color .25s,box-shadow .25s;position:relative;}
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+  position:relative;
+  display:flex;flex-direction:column;  /* KEY: card jadi flex column */
+}
 .bcard:hover{transform:translateY(-6px);border-color:rgba(255,45,120,.3);
   box-shadow:0 20px 48px rgba(0,0,0,.5);}
 .bthumb{width:100%;aspect-ratio:16/9;display:flex;align-items:center;
-  justify-content:center;font-size:54px;position:relative;overflow:hidden;}
+  justify-content:center;font-size:54px;position:relative;overflow:hidden;flex-shrink:0;}
+.bthumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .bthumb::after{content:'';position:absolute;inset:0;
   background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.7) 100%);}
 .bbadge{position:absolute;top:10px;left:10px;z-index:2;
@@ -116,25 +127,71 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 32px;
   background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
   padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;}
 .bvid .vdot{width:5px;height:5px;border-radius:50%;background:var(--pink);animation:pulse 1.5s infinite;}
-.cbody{padding:16px;}
-.brow{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
-.bname{font-family:var(--fh);font-size:17px;font-weight:800;display:flex;align-items:center;gap:5px;}
-.bverif{width:16px;height:16px;border-radius:50%;background:var(--cyan);
+/* Card body — flex column, isi sisa ruang */
+.cbody{
+  padding:16px;
+  display:flex;flex-direction:column;
+  flex:1;           /* mengisi sisa tinggi card */
+}
+/* Brow — nama + komisi, tidak overflow */
+.brow{
+  display:flex;align-items:flex-start;
+  justify-content:space-between;gap:6px;
+  margin-bottom:4px;
+}
+/* Nama brand — responsive, wrap, tidak melewati card */
+.bname{
+  font-family:var(--fh);
+  font-size:clamp(12px,1.8vw,16px);
+  font-weight:800;
+  display:flex;align-items:center;gap:4px;
+  flex:1;min-width:0;
+  word-break:break-word;
+  line-height:1.3;
+}
+.bverif{
+  width:14px;height:14px;border-radius:50%;background:var(--cyan);
   display:inline-flex;align-items:center;justify-content:center;
-  font-size:9px;color:var(--bg);font-weight:700;}
-.bcomm{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--pink);}
-.bcat{font-size:12px;color:var(--muted);margin-bottom:8px;}
-.bdesc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
-.bstats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
-  padding:10px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:12px;}
+  font-size:8px;color:var(--bg);font-weight:700;flex-shrink:0;
+}
+/* Komisi — tidak menyusut, tidak wrap */
+.bcomm{
+  font-family:var(--fh);font-size:12px;font-weight:700;
+  color:var(--pink);flex-shrink:0;white-space:nowrap;
+}
+.bcat{font-size:12px;color:var(--muted);margin-bottom:6px;}
+/* Deskripsi */
+.bdesc-wrap{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:4px;}
+.bdesc-text{display:inline;}
+.bdesc-btn{
+  background:none;border:none;padding:0;cursor:pointer;
+  color:var(--pink);font-size:12px;font-weight:700;
+  font-family:var(--fb);display:inline;margin-left:2px;
+  transition:opacity .2s;
+}
+.bdesc-btn:hover{opacity:.7;}
+/* Spacer mendorong stats+btn ke bawah */
+.bcard-spacer{flex:1;min-height:8px;}
+.bstats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+  padding:10px 0;border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);margin-bottom:12px;
+}
 .bsv{font-family:var(--fh);font-size:13px;font-weight:700;text-align:center;}
 .bsl{font-size:10px;color:var(--muted);text-align:center;margin-top:1px;}
-.shopbtn{display:flex;align-items:center;justify-content:space-between;width:100%;
+/* Tombol selalu di bawah */
+.shopbtn{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;margin-top:auto;
   background:linear-gradient(135deg,rgba(255,45,120,.12),rgba(255,45,120,.06));
   border:1px solid rgba(255,45,120,.25);color:var(--white);
   padding:10px 14px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;
-  transition:background .2s,transform .15s;font-family:var(--fh);}
+  transition:background .2s,transform .15s;font-family:var(--fh);
+}
 .shopbtn:hover{background:var(--pink);transform:scale(1.01);}
+.shopbtn span:first-child{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
+}
 
 /* GENERATOR */
 .gen-section{padding:80px 24px;background:var(--bg2);
@@ -243,14 +300,22 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:36px 32p
   font-size:12px;color:var(--muted);flex-wrap:wrap;gap:8px;}
 
 /* RESPONSIVE */
-@media(max-width:900px){.brand-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:900px){
+  .brand-grid{grid-template-columns:repeat(2,1fr);}
+  .bname{font-size:clamp(12px,2.5vw,15px);}
+}
 @media(max-width:580px){
   nav{padding:12px 16px;}
-  .brand-grid{grid-template-columns:1fr 1fr;}
+  .brand-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .bname{font-size:clamp(11px,3vw,14px);}
+  .bcomm{font-size:11px;}
   .grow{flex-direction:column;}
   .ft{flex-direction:column;}
 }
-@media(max-width:380px){.brand-grid{grid-template-columns:1fr;}}
+@media(max-width:380px){
+  .brand-grid{grid-template-columns:1fr;}
+  .bname{font-size:14px;}
+}
 </style>
 <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
@@ -460,6 +525,39 @@ const obs = new IntersectionObserver(entries=>{
   });
 },{threshold:.1});
 
+// ── Desc helper — 90 char truncation ──────────────
+const DLIMIT = 90;
+function buildDesc(text, uid){
+  if(!text || text.length === 0)
+    return '<div class="bdesc-wrap" style="min-height:16px"></div>';
+  if(text.length <= DLIMIT)
+    return `<div class="bdesc-wrap">${text}</div>`;
+  const short = text.slice(0, DLIMIT).trimEnd();
+  return `<div class="bdesc-wrap">
+    <span id="ds-${uid}">${short}...</span>
+    <span id="df-${uid}" style="display:none">${text}</span>
+    <button class="bdesc-btn" id="db-${uid}"
+      onclick="event.stopPropagation();xDesc(${uid})">Selengkapnya</button>
+  </div>`;
+}
+window.xDesc = function(uid){
+  const s=document.getElementById('ds-'+uid);
+  const f=document.getElementById('df-'+uid);
+  const b=document.getElementById('db-'+uid);
+  if(!s||!f||!b) return;
+  const open = f.style.display!=='none';
+  s.style.display = open?'inline':'none';
+  f.style.display = open?'none':'inline';
+  b.textContent   = open?'Selengkapnya':'Lebih sedikit';
+};
+// Visit brand from card button (stop modal open)
+window.visitCard = function(idx, e){
+  e.stopPropagation();
+  const b = BRANDS[idx]; if(!b) return;
+  const url = (b.affUrl&&b.affUrl.startsWith('http'))?b.affUrl:b.url||'#';
+  window.open(url,'_blank');
+};
+
 // ── Render brands ─────────────────────────────────
 function renderBrands(cat){
   currentFilter = cat || 'all';
@@ -477,12 +575,17 @@ function renderBrands(cat){
   grid.innerHTML = list.map(b => {
     const plat  = PLATFORM_BADGE[b.platform] || PLATFORM_BADGE.custom;
     const idx   = BRANDS.indexOf(b);
+    const uid   = idx; // unique id for desc toggle
     const badge = b.badge==='hot' ? `<div class="bbadge bh">🔥 HOT</div>`
                 : b.badge==='top' ? `<div class="bbadge bt">⭐ TOP</div>`
                 : b.badge==='new' ? `<div class="bbadge bn">✨ NEW</div>` : '';
+    const thumbContent = b.imageUrl
+      ? `<img src="${b.imageUrl}" alt="${b.name}">`
+      : `<span style="font-size:54px;position:relative;z-index:1">${b.emoji||'🛍️'}</span>`;
     return `
     <div class="bcard" data-cat="${b.cat}" onclick="openModal(${idx})">
-      <div class="bthumb" style="background:${b.bg||'#1a1a2e'}">${b.emoji||'🛍️'}
+      <div class="bthumb" style="background:${b.bg||'#1a1a2e'}">
+        ${thumbContent}
         ${badge}
         <div class="bvid"><span class="vdot"></span>${b.videos||'0'} Videos</div>
       </div>
@@ -492,13 +595,16 @@ function renderBrands(cat){
           <div class="bcomm">${b.comm}% komisi</div>
         </div>
         <div class="bcat">${b.catLabel||b.cat}</div>
-        <p class="bdesc">${b.desc||''}</p>
+        ${buildDesc(b.desc||'', uid)}
+        <div class="bcard-spacer"></div>
         <div class="bstats">
           <div><div class="bsv" style="color:var(--pink)">${b.comm}%</div><div class="bsl">Komisi</div></div>
           <div><div class="bsv">${b.cookie}d</div><div class="bsl">Cookie</div></div>
           <div><div class="bsv" style="color:var(--yellow)">★${b.rating}</div><div class="bsl">Rating</div></div>
         </div>
-        <button class="shopbtn"><span>🛍️ Kunjungi ${b.name}</span><span>→</span></button>
+        <button class="shopbtn" onclick="visitCard(${idx},event)">
+          <span>🛍️ Kunjungi ${b.name}</span><span>→</span>
+        </button>
       </div>
     </div>`;
   }).join('');
