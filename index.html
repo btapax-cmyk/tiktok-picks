@@ -229,40 +229,131 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 32px;
 .gnote{font-size:11px;color:var(--muted);margin-top:10px;}
 
 /* MODAL */
-.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.88);
-  backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:20px;}
+.overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.88);backdrop-filter:blur(10px);
+  display:none;align-items:center;justify-content:center;
+  padding:16px;
+}
 .overlay.open{display:flex;}
-.modal{background:var(--bg2);border:1px solid rgba(255,45,120,.2);border-radius:24px;
-  max-width:560px;width:100%;max-height:92vh;overflow-y:auto;
-  animation:fadeUp .3s ease both;position:relative;}
-.mhero{width:100%;height:170px;display:flex;align-items:center;justify-content:center;
-  font-size:68px;border-radius:24px 24px 0 0;position:relative;}
-.mx{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;
-  background:rgba(0,0,0,.5);border:1px solid var(--border);color:var(--white);
-  font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.mbody{padding:26px;}
-.mtop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px;}
-.mname{font-family:var(--fh);font-size:24px;font-weight:800;}
-.mcomm{font-family:var(--fh);font-size:18px;font-weight:800;color:var(--pink);}
-.mcat{font-size:12px;color:var(--muted);margin-bottom:16px;}
-.mstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;}
-.ms{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:13px;text-align:center;}
-.msv{font-family:var(--fh);font-size:18px;font-weight:800;margin-bottom:3px;}
+
+/* Modal — NO scroll, full fit in viewport */
+.modal{
+  background:var(--bg2);
+  border:1px solid rgba(255,45,120,.2);
+  border-radius:20px;
+  max-width:480px;width:100%;
+  overflow:hidden;          /* no scrollbar */
+  animation:fadeUp .3s ease both;
+  position:relative;
+  display:flex;flex-direction:column;
+  max-height:calc(100vh - 32px); /* fits screen with padding */
+}
+
+/* Hero — image atau emoji */
+.mhero{
+  width:100%;height:140px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:60px;position:relative;overflow:hidden;
+}
+.mhero img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;
+}
+.mhero-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.5) 100%);
+  pointer-events:none;
+}
+
+/* Close button — always on top */
+.mx{
+  position:absolute;top:10px;right:10px;z-index:10;
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);
+  color:var(--white);font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
+}
+.mx:hover{background:rgba(255,45,120,.6);}
+
+/* Platform badge on hero */
+.mplat{
+  position:absolute;bottom:10px;left:12px;z-index:5;
+  font-size:11px;font-weight:700;padding:3px 10px;
+  border-radius:100px;font-family:var(--fh);
+}
+
+/* Body — compact, no scroll */
+.mbody{
+  padding:16px 20px 18px;
+  display:flex;flex-direction:column;
+  overflow:hidden;flex:1;
+}
+.mtop{
+  display:flex;align-items:flex-start;
+  justify-content:space-between;gap:8px;
+  margin-bottom:2px;
+}
+.mname{font-family:var(--fh);font-size:18px;font-weight:800;line-height:1.2;}
+.mcomm{font-family:var(--fh);font-size:15px;font-weight:800;color:var(--pink);flex-shrink:0;}
+.mcat{font-size:11px;color:var(--muted);margin-bottom:10px;}
+
+/* Stats row — compact */
+.mstats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:6px;margin-bottom:10px;
+}
+.ms{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:10px;padding:8px 6px;text-align:center;
+}
+.msv{font-family:var(--fh);font-size:14px;font-weight:800;margin-bottom:2px;}
 .msl{font-size:10px;color:var(--muted);}
-.mdesc{font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:16px;}
-.mtags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
-.mtag{background:var(--bg3);border:1px solid var(--border);color:var(--muted);
-  padding:4px 11px;border-radius:100px;font-size:11px;font-weight:600;}
-.visit-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+
+/* Desc — clamped, no overflow */
+.mdesc{
+  font-size:12px;color:var(--muted);line-height:1.6;
+  margin-bottom:8px;
+  display:-webkit-box;-webkit-line-clamp:3;
+  -webkit-box-orient:vertical;overflow:hidden;
+}
+
+/* Tags — single row, hidden overflow */
+.mtags{
+  display:flex;gap:5px;margin-bottom:12px;
+  overflow:hidden;max-height:24px;
+}
+.mtag{
+  background:var(--bg3);border:1px solid var(--border);color:var(--muted);
+  padding:3px 9px;border-radius:100px;font-size:10px;font-weight:600;
+  white-space:nowrap;flex-shrink:0;
+}
+
+/* Buttons */
+.visit-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
   background:linear-gradient(135deg,var(--pink),#ff6060);color:#fff;border:none;
-  padding:14px;border-radius:14px;font-family:var(--fh);font-size:14px;font-weight:700;
-  cursor:pointer;margin-bottom:8px;transition:opacity .2s,transform .15s;}
+  padding:12px;border-radius:12px;font-family:var(--fh);font-size:14px;font-weight:700;
+  cursor:pointer;margin-bottom:6px;transition:opacity .2s,transform .15s;
+}
 .visit-btn:hover{opacity:.9;transform:translateY(-1px);}
-.gen-modal-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+.gen-modal-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
   background:rgba(0,245,212,.1);border:1px solid rgba(0,245,212,.3);color:var(--cyan);
-  padding:12px;border-radius:14px;font-family:var(--fh);font-size:13px;font-weight:700;
-  cursor:pointer;transition:background .2s;}
+  padding:10px;border-radius:12px;font-family:var(--fh);font-size:12px;font-weight:700;
+  cursor:pointer;transition:background .2s;
+}
 .gen-modal-btn:hover{background:rgba(0,245,212,.2);}
+
+/* Mobile modal */
+@media(max-width:480px){
+  .overlay{padding:12px;}
+  .mhero{height:120px;}
+  .mbody{padding:14px 16px 16px;}
+  .mname{font-size:16px;}
+  .msv{font-size:13px;}
+}
 
 
 /* BRAND MANAGER BTN */
@@ -438,7 +529,13 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:36px 32p
 <!-- MODAL -->
 <div class="overlay" id="brandModal" onclick="closeOutside(event)">
   <div class="modal" id="modalEl">
-    <div class="mhero" id="mHero"><button class="mx" onclick="closeModal()">✕</button></div>
+    <div class="mhero" id="mHero">
+      <!-- close button always visible -->
+      <button class="mx" onclick="closeModal()">✕</button>
+      <!-- hero content (image or emoji) injected by JS -->
+      <div class="mhero-overlay"></div>
+      <!-- platform badge injected by JS -->
+    </div>
     <div class="mbody">
       <div class="mtop">
         <div><div class="mname" id="mName"></div><div class="mcat" id="mCat"></div></div>
@@ -626,19 +723,37 @@ window.openModal = function(idx){
   const b = BRANDS[idx]; if(!b) return;
   currentBrandIdx = idx;
   const plat = PLATFORM_BADGE[b.platform] || PLATFORM_BADGE.custom;
-  document.getElementById('mHero').innerHTML =
-    `<button class="mx" onclick="closeModal()">✕</button>
-     <span style="font-size:68px">${b.emoji||'🛍️'}</span>
-     <span style="position:absolute;bottom:14px;left:14px;background:${plat.color};
-       color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;
-       font-family:var(--fh)">${plat.icon} ${plat.label}</span>`;
-  document.getElementById('mHero').style.background = b.bg||'#1a1a2e';
+  const hero = document.getElementById('mHero');
+
+  // Set background color
+  hero.style.background = b.bg || '#1a1a2e';
+
+  // Build hero content: image or emoji
+  // Close button ALWAYS first so it stays on top
+  if(b.imageUrl && b.imageUrl.startsWith('http')){
+    hero.innerHTML = `
+      <button class="mx" onclick="closeModal()">✕</button>
+      <img src="${b.imageUrl}" alt="${b.name}"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+      <div class="mhero-overlay"></div>
+      <span class="mplat" style="background:${plat.color};color:#fff">
+        ${plat.icon} ${plat.label}
+      </span>`;
+  } else {
+    hero.innerHTML = `
+      <button class="mx" onclick="closeModal()">✕</button>
+      <span style="font-size:60px;position:relative;z-index:1">${b.emoji||'🛍️'}</span>
+      <span class="mplat" style="background:${plat.color};color:#fff">
+        ${plat.icon} ${plat.label}
+      </span>`;
+  }
+
   document.getElementById('mName').textContent  = b.name;
   document.getElementById('mCat').textContent   = b.catLabel||b.cat;
   document.getElementById('mComm').textContent  = b.comm+'% komisi';
   document.getElementById('mStats').innerHTML   = `
     <div class="ms"><div class="msv" style="color:var(--pink)">${b.comm}%</div><div class="msl">Komisi</div></div>
-    <div class="ms"><div class="msv" style="color:var(--cyan)">${b.cookie} hari</div><div class="msl">Cookie</div></div>
+    <div class="ms"><div class="msv" style="color:var(--cyan)">${b.cookie}d</div><div class="msl">Cookie</div></div>
     <div class="ms"><div class="msv" style="color:var(--yellow)">★${b.rating}</div><div class="msl">Rating</div></div>`;
   document.getElementById('mDesc').textContent  = b.desc||'';
   const tags = (b.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
