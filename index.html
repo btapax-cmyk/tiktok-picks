@@ -207,6 +207,24 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 32px;
   cursor:pointer;transition:background .2s;}
 .gen-modal-btn:hover{background:rgba(0,245,212,.2);}
 
+
+/* BRAND MANAGER BTN */
+@keyframes bmGlow{0%,100%{box-shadow:0 0 16px rgba(255,45,120,.5),0 0 32px rgba(255,45,120,.2)}50%{box-shadow:0 0 28px rgba(255,45,120,.9),0 0 56px rgba(255,45,120,.4)}}
+.bm-btn{
+  position:fixed;bottom:28px;right:28px;z-index:300;
+  display:flex;align-items:center;gap:8px;
+  background:var(--pink);color:#fff;
+  padding:13px 22px;border-radius:100px;
+  font-family:var(--fh);font-size:14px;font-weight:700;
+  border:none;cursor:pointer;
+  box-shadow:0 4px 24px rgba(255,45,120,.5);
+  animation:bmGlow 2.5s ease infinite;
+  transition:transform .2s;
+  text-decoration:none;
+}
+.bm-btn:hover{transform:translateY(-3px) scale(1.04);}
+.bm-btn .bm-icon{font-size:18px;}
+
 /* FOOTER */
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:36px 32px 24px;}
 .ft{display:flex;align-items:flex-start;justify-content:space-between;gap:32px;
@@ -604,5 +622,10 @@ window.addEventListener('DOMContentLoaded', ()=>{
     </div>`;
 });
 </script>
+
+<!-- BRAND MANAGER FLOATING BUTTON -->
+<a href="admin.html" class="bm-btn">
+  <span class="bm-icon">🛍️</span> Brand Manager
+</a>
 </body>
 </html>
