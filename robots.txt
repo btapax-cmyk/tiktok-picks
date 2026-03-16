@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Sembunyikan halaman admin dari Google
+Disallow: /admin.html
+
+# Sitemap
+Sitemap: https://tiktok-picks.vercel.app/sitemap.xml
