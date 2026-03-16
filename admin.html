@@ -124,6 +124,47 @@ a{color:inherit;text-decoration:none;}
 .toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--bg2);border:1px solid rgba(0,245,212,.3);color:var(--cyan);padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;transform:translateY(80px);opacity:0;transition:transform .3s,opacity .3s;pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1;}
 
+/* ── IMAGE UPLOAD ── */
+.img-field{
+  border:2px dashed var(--border);border-radius:14px;
+  overflow:hidden;cursor:pointer;
+  transition:border-color .2s,background .2s;
+  background:var(--bg3);
+  display:flex;align-items:stretch;min-height:88px;
+}
+.img-field:hover{border-color:rgba(255,45,120,.4);}
+.img-field.has-img{border-style:solid;border-color:rgba(0,245,212,.3);}
+.img-preview-box{
+  width:88px;flex-shrink:0;
+  background:var(--bg2);
+  display:flex;align-items:center;justify-content:center;
+  border-radius:12px 0 0 12px;overflow:hidden;position:relative;
+}
+.img-preview-box img{width:100%;height:100%;object-fit:cover;}
+.img-placeholder-icon{font-size:32px;color:var(--muted);}
+.img-info{flex:1;padding:14px 16px;display:flex;flex-direction:column;justify-content:center;gap:4px;}
+.img-info-title{font-size:14px;font-weight:700;color:var(--white);}
+.img-info-sub{font-size:11px;color:var(--muted);line-height:1.5;}
+.img-pick-btn{
+  display:inline-flex;align-items:center;gap:5px;margin-top:8px;
+  background:rgba(255,45,120,.12);border:1px solid rgba(255,45,120,.3);
+  color:var(--pink);padding:6px 12px;border-radius:8px;
+  font-size:12px;font-weight:700;font-family:var(--fb);cursor:pointer;
+  transition:background .2s;width:fit-content;
+}
+.img-pick-btn:hover{background:rgba(255,45,120,.22);}
+.img-remove-btn{
+  position:absolute;top:4px;right:4px;
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(0,0,0,.7);border:1px solid var(--border);
+  color:#fff;font-size:11px;cursor:pointer;
+  display:none;align-items:center;justify-content:center;
+}
+.img-remove-btn.show{display:flex;}
+.img-progress{height:3px;background:rgba(255,45,120,.15);border-radius:100px;margin-top:6px;overflow:hidden;display:none;}
+.img-progress-bar{height:100%;width:0%;background:var(--pink);border-radius:100px;transition:width .2s;}
+#fImgFile{display:none;}
+
 @media(max-width:768px){
   .admin-layout{grid-template-columns:1fr;}
   .sidebar{display:none;}
@@ -209,10 +250,36 @@ a{color:inherit;text-decoration:none;}
 
           <div class="form-card">
             <div class="fc-title">📋 Informasi Brand</div>
-            <div class="f-g2">
-              <div class="f-row"><label class="f-lbl">Emoji</label><input class="f-in" id="fEmoji" placeholder="👗" maxlength="4"></div>
-              <div class="f-row"><label class="f-lbl">Nama Brand <span class="f-req">*</span></label><input class="f-in" id="fName" placeholder="e.g. Zara"></div>
+
+            <!-- IMAGE UPLOAD (Cloudinary) -->
+            <div class="f-row">
+              <label class="f-lbl">Gambar / Logo Brand</label>
+              <div class="img-field" id="imgField" onclick="triggerPick()">
+                <div class="img-preview-box" id="imgPreviewBox">
+                  <span class="img-placeholder-icon" id="imgIcon">🖼️</span>
+                  <img id="imgPreviewEl" style="display:none" alt="preview">
+                  <button class="img-remove-btn" id="imgRemoveBtn"
+                    onclick="removeImg(event)">✕</button>
+                </div>
+                <div class="img-info">
+                  <div class="img-info-title" id="imgTitle">Pilih gambar brand</div>
+                  <div class="img-info-sub">JPG, PNG, WebP · Maks 2MB<br>Upload ke Cloudinary — tersimpan permanen</div>
+                  <div class="img-pick-btn" onclick="triggerPick();event.stopPropagation()">
+                    📁 Pilih File
+                  </div>
+                  <div class="img-progress" id="imgProgress">
+                    <div class="img-progress-bar" id="imgProgressBar"></div>
+                  </div>
+                </div>
+              </div>
+              <input type="file" id="fImgFile" accept="image/jpeg,image/png,image/webp,image/gif"
+                onchange="handleImgSelect(event)">
+              <p class="f-hint">Atau isi URL gambar langsung di bawah (opsional)</p>
+              <input class="f-in" id="fImageUrl" placeholder="https://... (URL gambar jika tidak upload)"
+                style="margin-top:8px" oninput="handleUrlInput()">
             </div>
+
+            <div class="f-row"><label class="f-lbl">Nama Brand <span class="f-req">*</span></label><input class="f-in" id="fName" placeholder="e.g. Zara"></div>
             <div class="f-g2">
               <div class="f-row"><label class="f-lbl">Kategori</label>
                 <select class="f-sel" id="fCat">
@@ -320,12 +387,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
+// ── Cloudinary Config ─────────────────────────────
+const CLD_CLOUD  = 'dt1oqicq5';       // cloud name Anda
+const CLD_PRESET = 'tiktok_picks';    // upload preset (Unsigned)
+
 const ADMIN_PASS = '1234'; // ← GANTI PASSWORD ANDA
 
 const CAT_MAP = {fashion:'👗 Fashion',beauty:'💄 Beauty',tech:'📱 Tech',fitness:'🏋️ Fitness',food:'🍔 Food',home:'🏠 Home',gaming:'🎮 Gaming',other:'✨ Other'};
 const BGS = ['linear-gradient(135deg,#1a1a2e,#2d2d4e)','linear-gradient(135deg,#1f0a1f,#3d1a3d)','linear-gradient(135deg,#0a1a0a,#1a3a1a)','linear-gradient(135deg,#0a1628,#1a2a4e)','linear-gradient(135deg,#0a1a2a,#1a3a4e)','linear-gradient(135deg,#2a0a0a,#4e1a1a)','linear-gradient(135deg,#1a1a0a,#3a3a1a)','linear-gradient(135deg,#1a0a0a,#2a1212)','linear-gradient(135deg,#1a1a1a,#2a2a2a)','linear-gradient(135deg,#0a1a1a,#1a3a3a)'];
 
 let BRANDS = [], editDocId = null;
+let pendingFile = null;   // file baru yang dipilih
+let currentImgUrl = '';   // URL gambar yang sudah ada (saat edit)
 
 // ── Utils ─────────────────────────────────────────
 function toast(msg, err=false){
@@ -385,14 +458,18 @@ function renderList(){
   }
   el.innerHTML=BRANDS.map(b=>`
     <div class="brand-item">
-      <div class="bi-emoji" style="background:${b.bg||'#1a1a2e'}">${b.emoji||'🛍️'}</div>
+      <div class="bi-emoji" style="background:${b.bg||'#1a1a2e'};overflow:hidden;">
+        ${b.imageUrl
+          ? `<img src="${b.imageUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:12px" alt="${b.name}">`
+          : `<span>${b.emoji||'🛍️'}</span>`}
+      </div>
       <div class="bi-info">
         <div class="bi-name">${b.name} <span style="font-size:11px;color:var(--muted);font-weight:400">${CAT_MAP[b.cat]||b.cat}</span></div>
         <div class="bi-meta">
           <span>${b.comm||0}% komisi</span>
           <span>Cookie: ${b.cookie||30}d</span>
           <span>${b.affUrl?.startsWith('http')?'<span class="link-ok">✓ Link set</span>':'<span class="link-no">✗ Link belum diisi</span>'}</span>
-          <span>${b.videos||0} videos</span>
+          <span>${b.imageUrl?'<span class="link-ok">✓ Gambar set</span>':'<span style="color:var(--muted)">emoji</span>'}</span>
         </div>
       </div>
       <div class="bi-actions">
@@ -400,6 +477,95 @@ function renderList(){
         <button class="ab ab-del" onclick="delBrand('${b.docId}','${b.name}')">🗑️ Hapus</button>
       </div>
     </div>`).join('');
+}
+
+// ── Image Upload (Cloudinary) ─────────────────────
+window.triggerPick = function(){
+  document.getElementById('fImgFile').click();
+};
+window.handleImgSelect = function(e){
+  const file = e.target.files[0]; if(!file) return;
+  if(file.size > 2*1024*1024){ toast('⚠ Ukuran maks 2MB!',true); return; }
+  pendingFile = file;
+  const reader = new FileReader();
+  reader.onload = ev => setImgPreview(ev.target.result, file.name);
+  reader.readAsDataURL(file);
+  // clear URL input
+  document.getElementById('fImageUrl').value = '';
+  currentImgUrl = '';
+};
+window.handleUrlInput = function(){
+  const url = document.getElementById('fImageUrl').value.trim();
+  if(url.startsWith('http')){
+    pendingFile = null;
+    currentImgUrl = url;
+    setImgPreview(url, 'URL gambar');
+  }
+};
+function setImgPreview(src, label){
+  const img = document.getElementById('imgPreviewEl');
+  const icon = document.getElementById('imgIcon');
+  const removeBtn = document.getElementById('imgRemoveBtn');
+  const field = document.getElementById('imgField');
+  img.src = src; img.style.display = 'block';
+  icon.style.display = 'none';
+  removeBtn.classList.add('show');
+  field.classList.add('has-img');
+  document.getElementById('imgTitle').textContent = label;
+}
+window.removeImg = function(e){
+  e.stopPropagation();
+  pendingFile = null; currentImgUrl = '';
+  document.getElementById('imgPreviewEl').style.display='none';
+  document.getElementById('imgPreviewEl').src='';
+  document.getElementById('imgIcon').style.display='block';
+  document.getElementById('imgRemoveBtn').classList.remove('show');
+  document.getElementById('imgField').classList.remove('has-img');
+  document.getElementById('imgTitle').textContent='Pilih gambar brand';
+  document.getElementById('fImgFile').value='';
+  document.getElementById('fImageUrl').value='';
+};
+function resetImgWidget(){
+  pendingFile = null; currentImgUrl = '';
+  document.getElementById('imgPreviewEl').style.display='none';
+  document.getElementById('imgPreviewEl').src='';
+  document.getElementById('imgIcon').style.display='block';
+  document.getElementById('imgRemoveBtn').classList.remove('show');
+  document.getElementById('imgField').classList.remove('has-img');
+  document.getElementById('imgTitle').textContent='Pilih gambar brand';
+  document.getElementById('fImgFile').value='';
+  document.getElementById('fImageUrl').value='';
+  document.getElementById('imgProgress').style.display='none';
+  document.getElementById('imgProgressBar').style.width='0%';
+}
+async function uploadToCloudinary(file){
+  return new Promise((resolve, reject)=>{
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLD_PRESET);
+    fd.append('folder','brands');
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLD_CLOUD}/image/upload`);
+    // Progress
+    document.getElementById('imgProgress').style.display='block';
+    xhr.upload.onprogress = e=>{
+      if(e.lengthComputable){
+        const pct = Math.round(e.loaded/e.total*100);
+        document.getElementById('imgProgressBar').style.width=pct+'%';
+      }
+    };
+    xhr.onload = ()=>{
+      document.getElementById('imgProgress').style.display='none';
+      if(xhr.status===200){
+        const res = JSON.parse(xhr.responseText);
+        resolve(res.secure_url);
+      } else {
+        reject(new Error('Upload gagal: '+xhr.statusText));
+      }
+    };
+    xhr.onerror = ()=>reject(new Error('Network error saat upload'));
+    xhr.send(fd);
+  });
 }
 
 // ── Form ──────────────────────────────────────────
@@ -419,7 +585,13 @@ window.editBrand=function(docId){
   const b=BRANDS.find(x=>x.docId===docId);if(!b)return;
   editDocId=docId;
   document.getElementById('formTitle').textContent='Edit Brand: '+b.name;
-  document.getElementById('fEmoji').value=b.emoji||'';
+  // Load existing image
+  resetImgWidget();
+  if(b.imageUrl){
+    currentImgUrl=b.imageUrl;
+    setImgPreview(b.imageUrl, 'Gambar tersimpan');
+    document.getElementById('fImageUrl').value=b.imageUrl;
+  }
   document.getElementById('fName').value=b.name||'';
   document.getElementById('fCat').value=b.cat||'fashion';
   document.getElementById('fBadge').value=b.badge||'none';
@@ -439,7 +611,8 @@ window.editBrand=function(docId){
   window.scrollTo({top:0,behavior:'smooth'});
 };
 function resetForm(){
-  ['fEmoji','fName','fDesc','fTags','fAffUrl','fUrl'].forEach(id=>document.getElementById(id).value='');
+  resetImgWidget();
+  ['fName','fDesc','fTags','fAffUrl','fUrl'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fCat').value='fashion';
   document.getElementById('fBadge').value='none';
   document.getElementById('fPlatform').value='shopee';
@@ -451,14 +624,35 @@ function resetForm(){
   updPrev();
 }
 
-// ── Save ──────────────────────────────────────────
+// ── Save (Firestore + Cloudinary) ─────────────────
 window.saveBrand=async function(){
   const name=document.getElementById('fName').value.trim();
   if(!name){toast('⚠ Nama brand wajib diisi!',true);return;}
   const catVal=document.getElementById('fCat').value;
+
+  const btn=document.getElementById('saveBtn');
+  btn.disabled=true;
+
+  // Upload gambar ke Cloudinary jika ada file baru
+  let imageUrl = currentImgUrl;
+  if(pendingFile){
+    btn.innerHTML='<span class="spinner"></span>Mengupload gambar...';
+    try{
+      imageUrl = await uploadToCloudinary(pendingFile);
+    }catch(err){
+      toast('❌ Gagal upload gambar: '+err.message,true);
+      btn.disabled=false; btn.innerHTML='💾 Simpan Brand';
+      return;
+    }
+  }
+
+  btn.innerHTML='<span class="spinner"></span>Menyimpan...';
+
+  // Data ke Firestore (semua field tetap sama + imageUrl)
   const data={
-    emoji:document.getElementById('fEmoji').value.trim()||'🛍️',
-    name,cat:catVal,catLabel:CAT_MAP[catVal]||catVal,
+    imageUrl: imageUrl || '',           // URL gambar dari Cloudinary / input URL
+    emoji: imageUrl ? '' : '🛍️',        // emoji hanya jika tidak ada gambar
+    name, cat:catVal, catLabel:CAT_MAP[catVal]||catVal,
     badge:document.getElementById('fBadge').value,
     desc:document.getElementById('fDesc').value.trim(),
     tags:document.getElementById('fTags').value.trim(),
@@ -471,8 +665,7 @@ window.saveBrand=async function(){
     rating:document.getElementById('fRating').value.trim()||'4.5',
     bg:document.getElementById('fBg').value||BGS[0],
   };
-  const btn=document.getElementById('saveBtn');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Menyimpan...';
+
   try{
     if(editDocId){
       await updateDoc(doc(db,'brands',editDocId),data);
@@ -481,9 +674,9 @@ window.saveBrand=async function(){
       await addDoc(collection(db,'brands'),{...data,createdAt:serverTimestamp()});
       toast('✅ Brand ditambahkan dan langsung live!');
     }
-    showSaved();editDocId=null;hideForm();
+    showSaved(); editDocId=null; hideForm();
   }catch(err){toast('❌ Gagal: '+err.message,true);console.error(err);}
-  btn.disabled=false;btn.innerHTML='💾 Simpan Brand';
+  btn.disabled=false; btn.innerHTML='💾 Simpan Brand';
 };
 
 // ── Delete ────────────────────────────────────────
@@ -525,7 +718,7 @@ window.saveProfile=async function(){
   btn.disabled=false;btn.innerHTML='💾 Simpan & Langsung Live';
 };
 
-// ── Realtime listener ─────────────────────────────
+// ── Realtime listener (Firestore) ─────────────────
 onSnapshot(query(collection(db,'brands'),orderBy('createdAt','asc')),snap=>{
   BRANDS=snap.docs.map(d=>({docId:d.id,...d.data()}));
   renderList();setCount(BRANDS.length);
