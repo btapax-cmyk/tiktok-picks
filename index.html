@@ -394,36 +394,52 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:36px 32p
   </div>
 </footer>
 
-<script>
-// ── Shared storage keys (sama dengan admin.html) ──
-const STORAGE_KEY_BRANDS   = 'tikaf_brands';
-const STORAGE_KEY_SETTINGS = 'tikaf_settings';
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp }     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, doc, onSnapshot, getDoc, query, orderBy }
+                              from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
+// ── Firebase Config ───────────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyCVNoonIcyMI0yS3bX13DA89j1TZ0ZOHD0",
+  authDomain:        "my-tiktok-picks.firebaseapp.com",
+  projectId:         "my-tiktok-picks",
+  storageBucket:     "my-tiktok-picks.firebasestorage.app",
+  messagingSenderId: "812304194305",
+  appId:             "1:812304194305:web:c830e6a0a846341e249900",
+  measurementId:     "G-XG5VYMNV97"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// ── Constants ─────────────────────────────────────
 const PLATFORM_BADGE = {
   tiktok:    {label:'TikTok Shop',color:'#ff2d78',icon:'♪'},
   shopee:    {label:'Shopee',     color:'#ee4d2d',icon:'🛒'},
-  tokopedia: {label:'Tokopedia',  color:'#42b549', icon:'🏪'},
-  custom:    {label:'Custom',     color:'#7c7c99', icon:'🔗'},
+  tokopedia: {label:'Tokopedia',  color:'#42b549',icon:'🏪'},
+  custom:    {label:'Custom',     color:'#7c7c99',icon:'🔗'},
 };
 
-function loadBrands(){
-  try{ const s=localStorage.getItem(STORAGE_KEY_BRANDS); return s?JSON.parse(s):[]; }
-  catch(e){ return []; }
-}
-function loadSettings(){
-  try{ const s=localStorage.getItem(STORAGE_KEY_SETTINGS); return s?JSON.parse(s):{}; }
-  catch(e){ return {}; }
-}
-
-let BRANDS = loadBrands();
-let currentFilter = 'all';
+let BRANDS          = [];
+let currentFilter   = 'all';
 let currentBrandIdx = -1;
+
+// ── IntersectionObserver ──────────────────────────
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      e.target.style.animation=`fadeUp .5s ${i*.06}s ease both`;
+      obs.unobserve(e.target);
+    }
+  });
+},{threshold:.1});
 
 // ── Render brands ─────────────────────────────────
 function renderBrands(cat){
-  currentFilter = cat||'all';
+  currentFilter = cat || 'all';
   const grid = document.getElementById('brandGrid');
-  const list = BRANDS.filter(b => currentFilter==='all'||b.cat===currentFilter);
+  const list = BRANDS.filter(b => currentFilter==='all' || b.cat===currentFilter);
 
   if(list.length===0){
     grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:60px 24px;color:var(--muted);">
@@ -433,12 +449,12 @@ function renderBrands(cat){
     return;
   }
 
-  grid.innerHTML = list.map(b=>{
-    const plat = PLATFORM_BADGE[b.platform]||PLATFORM_BADGE.custom;
-    const idx  = BRANDS.indexOf(b);
-    const badge = b.badge==='hot'?`<div class="bbadge bh">🔥 HOT</div>`
-                : b.badge==='top'?`<div class="bbadge bt">⭐ TOP</div>`
-                : b.badge==='new'?`<div class="bbadge bn">✨ NEW</div>`:'';
+  grid.innerHTML = list.map(b => {
+    const plat  = PLATFORM_BADGE[b.platform] || PLATFORM_BADGE.custom;
+    const idx   = BRANDS.indexOf(b);
+    const badge = b.badge==='hot' ? `<div class="bbadge bh">🔥 HOT</div>`
+                : b.badge==='top' ? `<div class="bbadge bt">⭐ TOP</div>`
+                : b.badge==='new' ? `<div class="bbadge bn">✨ NEW</div>` : '';
     return `
     <div class="bcard" data-cat="${b.cat}" onclick="openModal(${idx})">
       <div class="bthumb" style="background:${b.bg||'#1a1a2e'}">${b.emoji||'🛍️'}
@@ -463,123 +479,129 @@ function renderBrands(cat){
   }).join('');
 
   document.getElementById('brandCountHero').textContent = BRANDS.length;
-  document.querySelectorAll('.bcard').forEach(el=>{el.style.opacity='0'; obs.observe(el);});
+  document.querySelectorAll('.bcard').forEach(el=>{ el.style.opacity='0'; obs.observe(el); });
 }
 
-// ── Filter ────────────────────────────────────────
-function filterBrands(cat,btn){
+// ── Filter (dipanggil dari HTML onclick) ──────────
+window.filterBrands = function(cat, btn){
   document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderBrands(cat);
-}
+};
 
 // ── Modal ─────────────────────────────────────────
-function openModal(idx){
-  const b=BRANDS[idx]; if(!b)return;
-  currentBrandIdx=idx;
-  const plat=PLATFORM_BADGE[b.platform]||PLATFORM_BADGE.custom;
-  document.getElementById('mHero').innerHTML=
+window.openModal = function(idx){
+  const b = BRANDS[idx]; if(!b) return;
+  currentBrandIdx = idx;
+  const plat = PLATFORM_BADGE[b.platform] || PLATFORM_BADGE.custom;
+  document.getElementById('mHero').innerHTML =
     `<button class="mx" onclick="closeModal()">✕</button>
      <span style="font-size:68px">${b.emoji||'🛍️'}</span>
      <span style="position:absolute;bottom:14px;left:14px;background:${plat.color};
        color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;
        font-family:var(--fh)">${plat.icon} ${plat.label}</span>`;
-  document.getElementById('mHero').style.background=b.bg||'#1a1a2e';
-  document.getElementById('mName').textContent=b.name;
-  document.getElementById('mCat').textContent=b.catLabel||b.cat;
-  document.getElementById('mComm').textContent=b.comm+'% komisi';
-  document.getElementById('mStats').innerHTML=`
+  document.getElementById('mHero').style.background = b.bg||'#1a1a2e';
+  document.getElementById('mName').textContent  = b.name;
+  document.getElementById('mCat').textContent   = b.catLabel||b.cat;
+  document.getElementById('mComm').textContent  = b.comm+'% komisi';
+  document.getElementById('mStats').innerHTML   = `
     <div class="ms"><div class="msv" style="color:var(--pink)">${b.comm}%</div><div class="msl">Komisi</div></div>
     <div class="ms"><div class="msv" style="color:var(--cyan)">${b.cookie} hari</div><div class="msl">Cookie</div></div>
     <div class="ms"><div class="msv" style="color:var(--yellow)">★${b.rating}</div><div class="msl">Rating</div></div>`;
-  document.getElementById('mDesc').textContent=b.desc||'';
-  const tags=(b.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
-  document.getElementById('mTags').innerHTML=tags.map(t=>`<span class="mtag">${t}</span>`).join('');
+  document.getElementById('mDesc').textContent  = b.desc||'';
+  const tags = (b.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
+  document.getElementById('mTags').innerHTML    = tags.map(t=>`<span class="mtag">${t}</span>`).join('');
   document.getElementById('brandModal').classList.add('open');
-  document.body.style.overflow='hidden';
-  document.getElementById('genUrl').value=b.affUrl||'';
-}
-function visitBrand(){
-  const b=BRANDS[currentBrandIdx];
-  const url=(b.affUrl&&b.affUrl.startsWith('http'))?b.affUrl:b.url||'#';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('genUrl').value = b.affUrl||'';
+};
+window.visitBrand = function(){
+  const b   = BRANDS[currentBrandIdx];
+  const url = (b.affUrl && b.affUrl.startsWith('http')) ? b.affUrl : b.url||'#';
   window.open(url,'_blank');
-}
-function closeModal(){document.getElementById('brandModal').classList.remove('open');document.body.style.overflow='';}
-function closeOutside(e){if(e.target===document.getElementById('brandModal'))closeModal();}
-function goGenerate(){closeModal();document.getElementById('generator').scrollIntoView({behavior:'smooth'});}
+};
+window.closeModal    = function(){ document.getElementById('brandModal').classList.remove('open'); document.body.style.overflow=''; };
+window.closeOutside  = function(e){ if(e.target===document.getElementById('brandModal')) closeModal(); };
+window.goGenerate    = function(){ closeModal(); document.getElementById('generator').scrollIntoView({behavior:'smooth'}); };
 
 // ── Generator ─────────────────────────────────────
-function generateLink(){
-  const url=document.getElementById('genUrl').value.trim();
-  const user=document.getElementById('genUser').value.trim().replace('@','');
-  if(!url){flashErr('Paste affiliate link dari Shopee/TikTok/Tokopedia!');return;}
-  if(!user){flashErr('Isi username TikTok kamu!');return;}
-  let plat='custom';
-  if(url.includes('shope.ee')||url.includes('shopee'))plat='shopee';
-  else if(url.includes('tiktok')||url.includes('vt.tik'))plat='tiktok';
-  else if(url.includes('tokopedia'))plat='tokopedia';
-  let finalUrl=url;
-  try{const u=new URL(url.startsWith('http')?url:'https://'+url);
+window.generateLink = function(){
+  const url  = document.getElementById('genUrl').value.trim();
+  const user = document.getElementById('genUser').value.trim().replace('@','');
+  if(!url){ flashErr('Paste affiliate link dari Shopee/TikTok/Tokopedia!'); return; }
+  if(!user){ flashErr('Isi username TikTok kamu!'); return; }
+  let plat = 'custom';
+  if(url.includes('shope.ee')||url.includes('shopee')) plat='shopee';
+  else if(url.includes('tiktok')||url.includes('vt.tik')) plat='tiktok';
+  else if(url.includes('tokopedia')) plat='tokopedia';
+  let finalUrl = url;
+  try{
+    const u = new URL(url.startsWith('http')?url:'https://'+url);
     u.searchParams.set('utm_source','tiktok');
     u.searchParams.set('utm_medium','bio');
     u.searchParams.set('utm_campaign',user);
-    finalUrl=u.toString();}catch(e){}
-  document.getElementById('genUrl2').textContent=finalUrl;
-  const pi={shopee:'🛒 Shopee Affiliate — tracking otomatis',tiktok:'♪ TikTok Shop — tracking otomatis',tokopedia:'🏪 Tokopedia — tracking otomatis',custom:'🔗 Custom link'};
-  document.getElementById('platInfo').textContent=pi[plat];
-  document.getElementById('platInfo').style.display='block';
+    finalUrl = u.toString();
+  }catch(e){}
+  document.getElementById('genUrl2').textContent = finalUrl;
+  const pi = {shopee:'🛒 Shopee Affiliate — tracking otomatis',tiktok:'♪ TikTok Shop — tracking otomatis',tokopedia:'🏪 Tokopedia — tracking otomatis',custom:'🔗 Custom link'};
+  document.getElementById('platInfo').textContent  = pi[plat];
+  document.getElementById('platInfo').style.display = 'block';
   document.getElementById('genResult').classList.add('show');
   document.getElementById('genResult').scrollIntoView({behavior:'smooth',block:'nearest'});
-}
+};
 function flashErr(msg){
-  const b=document.querySelector('.gbtn');
-  b.style.background='#ff4444';b.textContent='⚠ '+msg;
-  setTimeout(()=>{b.style.background='';b.textContent='⚡ Generate My Affiliate Link';},2500);
+  const b = document.querySelector('.gbtn');
+  b.style.background='#ff4444'; b.textContent='⚠ '+msg;
+  setTimeout(()=>{ b.style.background=''; b.textContent='⚡ Generate My Affiliate Link'; },2500);
 }
-function copyLink(){
+window.copyLink = function(){
   navigator.clipboard.writeText(document.getElementById('genUrl2').textContent).then(()=>{
-    const b=document.querySelector('.copybtn');b.textContent='✅ Tersalin!';
+    const b = document.querySelector('.copybtn'); b.textContent='✅ Tersalin!';
     setTimeout(()=>b.textContent='📋 Copy',2000);
   });
-}
+};
 
 // ── Apply profile settings ────────────────────────
-function applySettings(){
-  const s=loadSettings();
-  const handle=document.querySelector('.creator-handle');
-  if(handle)handle.textContent=s.name||'@YourName';
-  const bio=document.querySelector('.creator-bio');
-  if(bio&&s.bio)bio.textContent=s.bio;
-  const nums=document.querySelectorAll('.sstat .num');
-  if(nums[0])nums[0].textContent=s.followers||'0';
-  if(nums[1])nums[1].textContent=s.likes||'0';
-  if(nums[2])nums[2].textContent=s.engagement||'0%';
-  const logo=document.querySelector('.logo');
-  if(logo)logo.innerHTML=`<span class="at">@</span>${(s.name||'zeiz666').replace('@','')} <span class="logo-dot"></span>`;
-  document.querySelectorAll('.footer-tiktok-link,.nav-tiktok').forEach(a=>{if(s.tiktokUrl)a.href=s.tiktokUrl;});
+function applySettings(s){
+  if(!s) return;
+  const handle = document.querySelector('.creator-handle');
+  if(handle) handle.textContent = s.name||'@YourName';
+  const bio = document.querySelector('.creator-bio');
+  if(bio && s.bio) bio.textContent = s.bio;
+  const nums = document.querySelectorAll('.sstat .num');
+  if(nums[0]) nums[0].textContent = s.followers||'0';
+  if(nums[1]) nums[1].textContent = s.likes||'0';
+  if(nums[2]) nums[2].textContent = s.engagement||'0%';
+  const logo = document.querySelector('.logo');
+  if(logo) logo.innerHTML=`<span class="at">@</span>${(s.name||'YourName').replace('@','')} <span class="logo-dot"></span>`;
+  document.querySelectorAll('.footer-tiktok-link,.nav-tiktok').forEach(a=>{ if(s.tiktokUrl) a.href=s.tiktokUrl; });
 }
 
-// ── IntersectionObserver ──────────────────────────
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach((e,i)=>{if(e.isIntersecting){e.target.style.animation=`fadeUp .5s ${i*.06}s ease both`;obs.unobserve(e.target);}});
-},{threshold:.1});
-
-// ── Init ──────────────────────────────────────────
-window.addEventListener('DOMContentLoaded',()=>{
-  BRANDS=loadBrands();
-  renderBrands('all');
-  applySettings();
-  document.getElementById('brandCountHero').textContent=BRANDS.length;
+// ── Firebase Realtime Listeners ───────────────────
+// 1. Listen brands collection — auto update saat admin simpan
+const brandsQ = query(collection(db,'brands'), orderBy('createdAt','asc'));
+onSnapshot(brandsQ, snap => {
+  BRANDS = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderBrands(currentFilter);
+  document.getElementById('brandCountHero').textContent = BRANDS.length;
+}, err => {
+  console.error('Firestore brands error:', err);
 });
 
-// Listen for storage changes (when admin saves from admin.html)
-window.addEventListener('storage', e=>{
-  if(e.key===STORAGE_KEY_BRANDS){
-    BRANDS=loadBrands();
-    renderBrands(currentFilter);
-    document.getElementById('brandCountHero').textContent=BRANDS.length;
-  }
-  if(e.key===STORAGE_KEY_SETTINGS) applySettings();
+// 2. Listen settings doc — auto update profil
+onSnapshot(doc(db,'settings','profile'), snap => {
+  if(snap.exists()) applySettings(snap.data());
+}, err => {
+  console.error('Firestore settings error:', err);
+});
+
+// ── Loading indicator ─────────────────────────────
+window.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('brandGrid').innerHTML =
+    `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted);">
+      <div style="font-size:32px;margin-bottom:12px;animation:pulse 1.5s infinite">⏳</div>
+      <p>Memuat brand dari database...</p>
+    </div>`;
 });
 </script>
 </body>
