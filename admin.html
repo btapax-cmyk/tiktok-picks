@@ -121,44 +121,6 @@ a{color:inherit;text-decoration:none;}
 .prof-btn{background:linear-gradient(135deg,var(--pink),#ff6060);color:#fff;border:none;padding:14px 36px;border-radius:12px;font-family:var(--fh);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .2s;}
 .prof-btn:hover{opacity:.9;}
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
-/* IMAGE UPLOAD — Cloudinary */
-.img-upload-area{
-  border:2px dashed var(--border);border-radius:14px;
-  overflow:hidden;position:relative;background:var(--bg3);
-  display:flex;align-items:center;gap:0;
-  transition:border-color .2s,background .2s;cursor:pointer;
-}
-.img-upload-area:hover{border-color:rgba(255,45,120,.4);background:rgba(255,45,120,.04);}
-.img-upload-area.has-img{border-color:rgba(0,245,212,.35);}
-.img-preview-box{
-  width:96px;height:96px;flex-shrink:0;
-  background:var(--bg2);overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
-}
-.img-preview-box img{width:100%;height:100%;object-fit:cover;}
-.img-placeholder{font-size:38px;color:var(--muted);}
-.img-upload-info{flex:1;padding:16px;}
-.img-upload-title{font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px;}
-.img-upload-sub{font-size:12px;color:var(--muted);line-height:1.6;}
-.img-pick-btn{
-  display:inline-flex;align-items:center;gap:6px;margin-top:8px;
-  background:rgba(255,45,120,.12);border:1px solid rgba(255,45,120,.3);
-  color:var(--pink);padding:6px 14px;border-radius:8px;
-  font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fb);
-}
-.img-pick-btn:hover{background:rgba(255,45,120,.22);}
-.img-progress{height:3px;background:rgba(255,45,120,.15);border-radius:100px;margin-top:8px;overflow:hidden;display:none;}
-.img-progress-bar{height:100%;background:linear-gradient(90deg,var(--pink),var(--cyan));width:0%;transition:width .25s;border-radius:100px;}
-.img-remove{
-  position:absolute;top:8px;right:8px;
-  width:26px;height:26px;border-radius:50%;
-  background:rgba(0,0,0,.65);border:1px solid var(--border);
-  color:var(--white);font-size:13px;cursor:pointer;
-  display:none;align-items:center;justify-content:center;z-index:2;
-}
-.img-remove:hover{background:rgba(255,45,120,.6);}
-#fImgFile{display:none;}
-
 .toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--bg2);border:1px solid rgba(0,245,212,.3);color:var(--cyan);padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;transform:translateY(80px);opacity:0;transition:transform .3s,opacity .3s;pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1;}
 
@@ -247,29 +209,10 @@ a{color:inherit;text-decoration:none;}
 
           <div class="form-card">
             <div class="fc-title">📋 Informasi Brand</div>
-
-            <!-- IMAGE UPLOAD -->
-            <div class="f-row">
-              <label class="f-lbl">Logo / Gambar Brand <span class="f-req">*</span></label>
-              <div class="img-upload-area" id="imgArea" onclick="triggerPick()">
-                <div class="img-preview-box" id="imgBox">
-                  <span class="img-placeholder" id="imgPlaceholder">🖼️</span>
-                  <img id="imgPreview" style="display:none" alt="preview">
-                </div>
-                <div class="img-upload-info">
-                  <div class="img-upload-title" id="imgTitle">Pilih gambar brand</div>
-                  <div class="img-upload-sub">JPG, PNG, WebP · Maks 5MB<br>Upload ke Cloudinary — gratis & permanen</div>
-                  <div class="img-pick-btn" onclick="triggerPick();event.stopPropagation()">📁 Pilih File</div>
-                  <div class="img-progress" id="imgProgress">
-                    <div class="img-progress-bar" id="imgBar"></div>
-                  </div>
-                </div>
-                <button class="img-remove" id="imgRemove" onclick="removeImg(event)">✕</button>
-              </div>
-              <input type="file" id="fImgFile" accept="image/*" onchange="handleImgFile(event)">
+            <div class="f-g2">
+              <div class="f-row"><label class="f-lbl">Emoji</label><input class="f-in" id="fEmoji" placeholder="👗" maxlength="4"></div>
+              <div class="f-row"><label class="f-lbl">Nama Brand <span class="f-req">*</span></label><input class="f-in" id="fName" placeholder="e.g. Zara"></div>
             </div>
-
-            <div class="f-row"><label class="f-lbl">Nama Brand <span class="f-req">*</span></label><input class="f-in" id="fName" placeholder="e.g. Zara"></div>
             <div class="f-g2">
               <div class="f-row"><label class="f-lbl">Kategori</label>
                 <select class="f-sel" id="fCat">
@@ -363,11 +306,8 @@ a{color:inherit;text-decoration:none;}
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc,
          onSnapshot, getDoc, query, orderBy, serverTimestamp }
-// ── Cloudinary Config ─────────────────────────────
-const CLD_CLOUD  = 'dt1oqicq5';
-const CLD_PRESET = 'tiktok_picks';
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-// ── Firebase Config ───────────────────────────────
 const firebaseConfig = {
   apiKey:            "AIzaSyCVNoonIcyMI0yS3bX13DA89j1TZ0ZOHD0",
   authDomain:        "my-tiktok-picks.firebaseapp.com",
@@ -380,14 +320,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-const ADMIN_PASS = '1234';
+const ADMIN_PASS = '1234'; // ← GANTI PASSWORD ANDA
+
 const CAT_MAP = {fashion:'👗 Fashion',beauty:'💄 Beauty',tech:'📱 Tech',fitness:'🏋️ Fitness',food:'🍔 Food',home:'🏠 Home',gaming:'🎮 Gaming',other:'✨ Other'};
 const BGS = ['linear-gradient(135deg,#1a1a2e,#2d2d4e)','linear-gradient(135deg,#1f0a1f,#3d1a3d)','linear-gradient(135deg,#0a1a0a,#1a3a1a)','linear-gradient(135deg,#0a1628,#1a2a4e)','linear-gradient(135deg,#0a1a2a,#1a3a4e)','linear-gradient(135deg,#2a0a0a,#4e1a1a)','linear-gradient(135deg,#1a1a0a,#3a3a1a)','linear-gradient(135deg,#1a0a0a,#2a1212)','linear-gradient(135deg,#1a1a1a,#2a2a2a)','linear-gradient(135deg,#0a1a1a,#1a3a3a)'];
 
-let BRANDS=[], editDocId=null, imgFile=null, imgUrl='';
+let BRANDS = [], editDocId = null;
 
 // ── Utils ─────────────────────────────────────────
-function toast(msg,err=false){
+function toast(msg, err=false){
   const t=document.getElementById('toast');
   t.textContent=msg;
   t.style.borderColor=err?'rgba(255,45,120,.4)':'rgba(0,245,212,.3)';
@@ -395,72 +336,14 @@ function toast(msg,err=false){
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3000);
 }
-function showSaved(){const el=document.getElementById('saveInd');el.style.opacity='1';setTimeout(()=>el.style.opacity='0',2500);}
-function setCount(n){document.getElementById('brandCount').textContent=n;document.getElementById('sbCount').textContent=n;}
-
-// ── Cloudinary Upload ─────────────────────────────
-async function uploadToCloudinary(file){
-  const fd=new FormData();
-  fd.append('file',file);
-  fd.append('upload_preset',CLD_PRESET);
-  fd.append('folder','brands');
-  return new Promise((resolve,reject)=>{
-    const xhr=new XMLHttpRequest();
-    xhr.open('POST',`https://api.cloudinary.com/v1_1/${CLD_CLOUD}/image/upload`);
-    xhr.upload.onprogress=e=>{
-      if(e.lengthComputable){
-        document.getElementById('imgBar').style.width=Math.round(e.loaded/e.total*100)+'%';
-      }
-    };
-    xhr.onload=()=>{
-      if(xhr.status===200) resolve(JSON.parse(xhr.responseText).secure_url);
-      else reject(new Error('Upload gagal: '+xhr.status));
-    };
-    xhr.onerror=()=>reject(new Error('Network error'));
-    xhr.send(fd);
-  });
+function showSaved(){
+  const el=document.getElementById('saveInd');
+  el.style.opacity='1';
+  setTimeout(()=>el.style.opacity='0',2500);
 }
-
-// ── Image widget ──────────────────────────────────
-window.triggerPick=function(){document.getElementById('fImgFile').click();};
-window.handleImgFile=function(e){
-  const file=e.target.files[0];if(!file)return;
-  if(file.size>5*1024*1024){toast('⚠ Ukuran maks 5MB!',true);return;}
-  imgFile=file;
-  const r=new FileReader();
-  r.onload=ev=>setImgPreview(ev.target.result,file.name);
-  r.readAsDataURL(file);
-};
-window.removeImg=function(e){
-  e.stopPropagation();
-  imgFile=null;imgUrl='';
-  document.getElementById('imgPreview').style.display='none';
-  document.getElementById('imgPreview').src='';
-  document.getElementById('imgPlaceholder').style.display='block';
-  document.getElementById('imgTitle').textContent='Pilih gambar brand';
-  document.getElementById('imgRemove').style.display='none';
-  document.getElementById('imgArea').classList.remove('has-img');
-  document.getElementById('fImgFile').value='';
-};
-function setImgPreview(src,name){
-  document.getElementById('imgPreview').src=src;
-  document.getElementById('imgPreview').style.display='block';
-  document.getElementById('imgPlaceholder').style.display='none';
-  document.getElementById('imgTitle').textContent=name||'Gambar dipilih';
-  document.getElementById('imgRemove').style.display='flex';
-  document.getElementById('imgArea').classList.add('has-img');
-}
-function resetImgWidget(){
-  imgFile=null;imgUrl='';
-  document.getElementById('imgPreview').style.display='none';
-  document.getElementById('imgPreview').src='';
-  document.getElementById('imgPlaceholder').style.display='block';
-  document.getElementById('imgTitle').textContent='Pilih gambar brand';
-  document.getElementById('imgRemove').style.display='none';
-  document.getElementById('imgArea').classList.remove('has-img');
-  document.getElementById('fImgFile').value='';
-  document.getElementById('imgProgress').style.display='none';
-  document.getElementById('imgBar').style.width='0%';
+function setCount(n){
+  document.getElementById('brandCount').textContent=n;
+  document.getElementById('sbCount').textContent=n;
 }
 
 // ── Login ─────────────────────────────────────────
@@ -487,10 +370,10 @@ document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='En
 // ── Tabs ──────────────────────────────────────────
 window.goTab=function(tab,btn){
   document.querySelectorAll('.tnav-btn,.sb-btn').forEach(b=>b.classList.remove('active'));
-  if(btn)btn.classList.add('active');
-  document.getElementById('pgBrands').style.display=tab==='brands'?'block':'none';
+  if(btn) btn.classList.add('active');
+  document.getElementById('pgBrands').style.display =tab==='brands' ?'block':'none';
   document.getElementById('pgProfile').style.display=tab==='profile'?'block':'none';
-  if(tab==='brands')hideForm();
+  if(tab==='brands') hideForm();
 };
 
 // ── Brand List ────────────────────────────────────
@@ -502,11 +385,7 @@ function renderList(){
   }
   el.innerHTML=BRANDS.map(b=>`
     <div class="brand-item">
-      <div class="bi-emoji" style="background:${b.bg||'#1a1a2e'};overflow:hidden">
-        ${b.imageUrl
-          ?`<img src="${b.imageUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:12px" loading="lazy">`
-          :`<span style="font-size:24px">🛍️</span>`}
-      </div>
+      <div class="bi-emoji" style="background:${b.bg||'#1a1a2e'}">${b.emoji||'🛍️'}</div>
       <div class="bi-info">
         <div class="bi-name">${b.name} <span style="font-size:11px;color:var(--muted);font-weight:400">${CAT_MAP[b.cat]||b.cat}</span></div>
         <div class="bi-meta">
@@ -525,7 +404,7 @@ function renderList(){
 
 // ── Form ──────────────────────────────────────────
 window.showForm=function(){
-  editDocId=null;resetForm();
+  editDocId=null; resetForm();
   document.getElementById('formTitle').textContent='Tambah Brand Baru';
   document.getElementById('listView').style.display='none';
   document.getElementById('formView').style.display='block';
@@ -540,9 +419,7 @@ window.editBrand=function(docId){
   const b=BRANDS.find(x=>x.docId===docId);if(!b)return;
   editDocId=docId;
   document.getElementById('formTitle').textContent='Edit Brand: '+b.name;
-  imgFile=null;imgUrl=b.imageUrl||'';
-  if(b.imageUrl)setImgPreview(b.imageUrl,b.name);
-  else resetImgWidget();
+  document.getElementById('fEmoji').value=b.emoji||'';
   document.getElementById('fName').value=b.name||'';
   document.getElementById('fCat').value=b.cat||'fashion';
   document.getElementById('fBadge').value=b.badge||'none';
@@ -562,8 +439,7 @@ window.editBrand=function(docId){
   window.scrollTo({top:0,behavior:'smooth'});
 };
 function resetForm(){
-  resetImgWidget();
-  ['fName','fDesc','fTags','fAffUrl','fUrl'].forEach(id=>document.getElementById(id).value='');
+  ['fEmoji','fName','fDesc','fTags','fAffUrl','fUrl'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fCat').value='fashion';
   document.getElementById('fBadge').value='none';
   document.getElementById('fPlatform').value='shopee';
@@ -575,31 +451,13 @@ function resetForm(){
   updPrev();
 }
 
-// ── Save + Cloudinary Upload ──────────────────────
+// ── Save ──────────────────────────────────────────
 window.saveBrand=async function(){
   const name=document.getElementById('fName').value.trim();
   if(!name){toast('⚠ Nama brand wajib diisi!',true);return;}
-  if(!imgFile&&!imgUrl){toast('⚠ Upload gambar brand dulu!',true);return;}
-  const btn=document.getElementById('saveBtn');
-  btn.disabled=true;
-  let finalUrl=imgUrl;
-  if(imgFile){
-    btn.innerHTML='<span class="spinner"></span>Mengupload gambar...';
-    document.getElementById('imgProgress').style.display='block';
-    try{
-      finalUrl=await uploadToCloudinary(imgFile);
-    }catch(err){
-      toast('❌ Upload gambar gagal: '+err.message,true);
-      btn.disabled=false;btn.innerHTML='💾 Simpan Brand';
-      document.getElementById('imgProgress').style.display='none';
-      return;
-    }
-    document.getElementById('imgProgress').style.display='none';
-  }
-  btn.innerHTML='<span class="spinner"></span>Menyimpan...';
   const catVal=document.getElementById('fCat').value;
   const data={
-    imageUrl:finalUrl,
+    emoji:document.getElementById('fEmoji').value.trim()||'🛍️',
     name,cat:catVal,catLabel:CAT_MAP[catVal]||catVal,
     badge:document.getElementById('fBadge').value,
     desc:document.getElementById('fDesc').value.trim(),
@@ -613,6 +471,8 @@ window.saveBrand=async function(){
     rating:document.getElementById('fRating').value.trim()||'4.5',
     bg:document.getElementById('fBg').value||BGS[0],
   };
+  const btn=document.getElementById('saveBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Menyimpan...';
   try{
     if(editDocId){
       await updateDoc(doc(db,'brands',editDocId),data);
@@ -622,7 +482,7 @@ window.saveBrand=async function(){
       toast('✅ Brand ditambahkan dan langsung live!');
     }
     showSaved();editDocId=null;hideForm();
-  }catch(err){toast('❌ Gagal simpan: '+err.message,true);console.error(err);}
+  }catch(err){toast('❌ Gagal: '+err.message,true);console.error(err);}
   btn.disabled=false;btn.innerHTML='💾 Simpan Brand';
 };
 
