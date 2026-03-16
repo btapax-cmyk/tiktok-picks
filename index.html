@@ -235,8 +235,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 32px;
 .modal{background:var(--bg2);border:1px solid rgba(255,45,120,.2);border-radius:24px;
   max-width:560px;width:100%;max-height:92vh;overflow-y:auto;
   animation:fadeUp .3s ease both;position:relative;}
-.mhero{width:100%;height:170px;display:flex;align-items:center;justify-content:center;
-  font-size:68px;border-radius:24px 24px 0 0;position:relative;}
+.mhero{width:100%;height:200px;display:flex;align-items:center;justify-content:center;
+  font-size:68px;border-radius:24px 24px 0 0;position:relative;overflow:hidden;}
+.mhero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:24px 24px 0 0;}
+.mhero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.55) 100%);}
 .mx{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;
   background:rgba(0,0,0,.5);border:1px solid var(--border);color:var(--white);
   font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
@@ -626,13 +628,25 @@ window.openModal = function(idx){
   const b = BRANDS[idx]; if(!b) return;
   currentBrandIdx = idx;
   const plat = PLATFORM_BADGE[b.platform] || PLATFORM_BADGE.custom;
-  document.getElementById('mHero').innerHTML =
-    `<button class="mx" onclick="closeModal()">✕</button>
-     <span style="font-size:68px">${b.emoji||'🛍️'}</span>
-     <span style="position:absolute;bottom:14px;left:14px;background:${plat.color};
-       color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;
-       font-family:var(--fh)">${plat.icon} ${plat.label}</span>`;
-  document.getElementById('mHero').style.background = b.bg||'#1a1a2e';
+  const hero = document.getElementById('mHero');
+
+  // Set background color
+  hero.style.background = b.bg || '#1a1a2e';
+
+  // Build hero content — gambar jika ada, emoji jika tidak
+  const heroMedia = b.imageUrl
+    ? `<img src="${b.imageUrl}" alt="${b.name}"><div class="mhero-overlay"></div>`
+    : `<span style="font-size:68px;position:relative;z-index:1">${b.emoji||'🛍️'}</span>`;
+
+  hero.innerHTML = `
+    <button class="mx" onclick="closeModal()">✕</button>
+    ${heroMedia}
+    <span style="position:absolute;bottom:12px;left:12px;z-index:2;
+      background:${plat.color};color:#fff;font-size:11px;font-weight:700;
+      padding:4px 12px;border-radius:100px;font-family:var(--fh)">
+      ${plat.icon} ${plat.label}
+    </span>`;
+
   document.getElementById('mName').textContent  = b.name;
   document.getElementById('mCat').textContent   = b.catLabel||b.cat;
   document.getElementById('mComm').textContent  = b.comm+'% komisi';
