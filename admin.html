@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Affiliate Link Generator</title>
+<title>Brand Manager — My TikTok Picks</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -14,179 +14,125 @@
   --fh:'Syne',sans-serif;--fb:'DM Sans',sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
 body{font-family:var(--fb);background:var(--bg);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased;}
 a{color:inherit;text-decoration:none;}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(255,45,120,.4)}50%{box-shadow:0 0 40px rgba(255,45,120,.8)}}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── LOGIN ── */
-#loginScreen{
-  position:fixed;inset:0;z-index:999;background:var(--bg);
-  display:flex;align-items:center;justify-content:center;
-  animation:fadeIn .4s ease both;
-}
-.login-card{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:24px;padding:48px 40px;max-width:400px;width:90%;
-  text-align:center;animation:fadeUp .5s ease both;
-  position:relative;overflow:hidden;
-}
-.login-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--pink),var(--cyan));
-}
-.login-icon{font-size:48px;margin-bottom:20px;}
-.login-title{font-family:var(--fh);font-size:26px;font-weight:800;margin-bottom:6px;}
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;align-items:center;justify-content:center;animation:fadeIn .4s ease both;}
+.login-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:52px 44px;max-width:420px;width:90%;text-align:center;animation:fadeUp .5s ease both;position:relative;overflow:hidden;}
+.login-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--pink),var(--cyan));}
+.login-icon{font-size:52px;margin-bottom:20px;}
+.login-title{font-family:var(--fh);font-size:28px;font-weight:800;margin-bottom:6px;}
 .login-sub{font-size:14px;color:var(--muted);margin-bottom:32px;line-height:1.6;}
-.login-input{
-  width:100%;background:var(--bg3);border:1px solid var(--border);
-  border-radius:12px;padding:14px 18px;color:var(--white);
-  font-family:var(--fb);font-size:16px;outline:none;
-  text-align:center;letter-spacing:6px;
-  transition:border-color .2s;margin-bottom:14px;
-}
-.login-input:focus{border-color:rgba(255,45,120,.5);}
-.login-input::placeholder{letter-spacing:normal;color:var(--muted);}
-.login-btn{
-  width:100%;background:linear-gradient(135deg,var(--pink),#ff6060);
-  color:#fff;border:none;padding:14px;border-radius:12px;
-  font-family:var(--fh);font-size:16px;font-weight:700;cursor:pointer;
-  transition:opacity .2s,transform .15s;animation:glow 3s ease infinite;
-}
-.login-btn:hover{opacity:.9;transform:translateY(-1px);}
-.login-err{color:#ff6060;font-size:13px;margin-top:10px;display:none;}
+.login-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:15px 20px;color:var(--white);font-family:var(--fb);font-size:18px;outline:none;text-align:center;letter-spacing:8px;transition:border-color .2s;margin-bottom:14px;}
+.login-input:focus{border-color:rgba(255,45,120,.6);}
+.login-input::placeholder{letter-spacing:normal;color:var(--muted);font-size:14px;}
+.login-btn{width:100%;background:linear-gradient(135deg,var(--pink),#ff6060);color:#fff;border:none;padding:15px;border-radius:12px;font-family:var(--fh);font-size:16px;font-weight:700;cursor:pointer;animation:glow 3s ease infinite;transition:opacity .2s;}
+.login-btn:hover{opacity:.9;}
+.login-err{color:#ff6060;font-size:13px;margin-top:12px;display:none;}
 .back-link{margin-top:20px;font-size:13px;color:var(--muted);}
 .back-link a{color:var(--pink);font-weight:600;}
 
-/* ── MAIN APP ── */
-#mainApp{display:none;min-height:100vh;}
+/* MAIN */
+#adminApp{display:none;min-height:100vh;}
 
 /* Topbar */
-.topbar{
-  position:sticky;top:0;z-index:100;
-  background:rgba(10,10,15,.95);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
-  padding:14px 32px;
-  display:flex;align-items:center;justify-content:space-between;
-}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
 .topbar-logo{font-family:var(--fh);font-size:18px;font-weight:800;}
 .topbar-logo span{color:var(--pink);}
-.topbar-home{
-  display:flex;align-items:center;gap:6px;
-  background:rgba(255,255,255,.06);border:1px solid var(--border);
-  padding:8px 16px;border-radius:100px;font-size:13px;font-weight:600;
-  transition:background .2s;
-}
-.topbar-home:hover{background:rgba(255,255,255,.12);}
+.topbar-nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.tnav-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--fb);transition:all .2s;}
+.tnav-btn:hover{border-color:rgba(255,45,120,.3);color:var(--white);}
+.tnav-btn.active{background:var(--pink);border-color:var(--pink);color:#fff;}
+.tnav-home{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid var(--border);padding:8px 16px;border-radius:100px;font-size:13px;font-weight:600;transition:background .2s;}
+.tnav-home:hover{background:rgba(255,255,255,.12);}
+.save-ind{font-size:12px;color:var(--cyan);opacity:0;transition:opacity .4s;}
 
-/* Content */
-.content{max-width:780px;margin:0 auto;padding:48px 24px;}
-.page-title{font-family:var(--fh);font-size:28px;font-weight:800;margin-bottom:6px;}
-.page-sub{font-size:15px;color:var(--muted);margin-bottom:40px;line-height:1.6;}
+/* Layout */
+.admin-layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 57px);}
 
-/* Platform badges */
-.platform-badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;}
-.pbadge{display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:100px;font-size:13px;font-weight:700;}
+/* Sidebar */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:20px 14px;position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto;}
+.sb-lbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 10px;margin-bottom:8px;display:block;}
+.sb-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s,color .15s;color:var(--muted);border:none;background:none;width:100%;text-align:left;margin-bottom:2px;}
+.sb-btn:hover{background:rgba(255,255,255,.05);color:var(--white);}
+.sb-btn.active{background:rgba(255,45,120,.12);color:var(--pink);}
+.sb-icon{font-size:16px;width:22px;text-align:center;}
+.sb-badge{margin-left:auto;background:var(--pink);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;font-family:var(--fh);}
+.sb-divider{height:1px;background:var(--border);margin:12px 4px;}
 
-/* Generator Card */
-.gen-card{
-  background:var(--bg2);border:1px solid rgba(0,245,212,.2);
-  border-radius:20px;padding:36px;position:relative;overflow:hidden;
-  margin-bottom:24px;
-}
-.gen-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--pink),var(--cyan));
-}
-.gen-label{font-family:var(--fh);font-size:12px;font-weight:700;color:var(--cyan);
-  letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;}
-.gen-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
-.gen-input{
-  flex:1;min-width:200px;background:var(--bg3);border:1px solid var(--border);
-  border-radius:12px;padding:13px 16px;color:var(--white);
-  font-family:var(--fb);font-size:14px;outline:none;transition:border-color .2s;
-}
-.gen-input:focus{border-color:rgba(0,245,212,.5);}
-.gen-input::placeholder{color:var(--muted);}
-.gen-select{
-  background:var(--bg3);border:1px solid var(--border);border-radius:12px;
-  padding:13px 16px;color:var(--white);font-family:var(--fb);
-  font-size:14px;outline:none;cursor:pointer;min-width:150px;
-}
-.gen-btn{
-  width:100%;background:linear-gradient(135deg,var(--pink),#ff6060);
-  color:#fff;border:none;cursor:pointer;padding:15px;border-radius:12px;
-  font-family:var(--fh);font-size:16px;font-weight:700;margin-top:4px;
-  transition:opacity .2s,transform .15s;
-}
-.gen-btn:hover{opacity:.9;transform:translateY(-1px);}
+/* Main content */
+.main{padding:32px;max-width:880px;}
+.pg-title{font-family:var(--fh);font-size:24px;font-weight:800;margin-bottom:4px;}
+.pg-sub{font-size:14px;color:var(--muted);margin-bottom:24px;}
 
-/* Result */
-.result-box{
-  margin-top:16px;background:var(--bg3);
-  border:1px solid rgba(0,245,212,.3);border-radius:12px;
-  padding:14px 18px;display:none;
-  align-items:center;gap:12px;
-}
-.result-box.show{display:flex;}
-.result-url{
-  font-size:13px;color:var(--cyan);word-break:break-all;flex:1;
-  font-family:'Courier New',monospace;
-}
-.copy-btn{
-  background:rgba(0,245,212,.12);border:1px solid rgba(0,245,212,.3);
-  color:var(--cyan);padding:8px 16px;border-radius:8px;
-  font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;
-  font-family:var(--fb);transition:background .2s;
-}
-.copy-btn:hover{background:rgba(0,245,212,.25);}
-.plat-info{font-size:12px;color:var(--cyan);margin-top:10px;display:none;text-align:left;}
-.gen-note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6;}
+/* Brand list */
+.list-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+.add-btn{display:inline-flex;align-items:center;gap:7px;background:var(--pink);color:#fff;padding:10px 22px;border-radius:100px;font-family:var(--fh);font-size:14px;font-weight:700;border:none;cursor:pointer;transition:opacity .2s,transform .15s;}
+.add-btn:hover{opacity:.9;transform:translateY(-1px);}
+.brand-item{display:flex;align-items:center;gap:14px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:10px;transition:border-color .2s;}
+.brand-item:hover{border-color:rgba(255,45,120,.2);}
+.bi-emoji{font-size:28px;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.bi-info{flex:1;min-width:0;}
+.bi-name{font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:3px;}
+.bi-meta{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;}
+.link-ok{color:var(--cyan);}
+.link-no{color:#ff6060;}
+.bi-actions{display:flex;gap:8px;flex-shrink:0;}
+.ab{padding:7px 13px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;font-family:var(--fb);}
+.ab:hover{opacity:.8;}
+.ab-edit{background:rgba(0,245,212,.1);border-color:rgba(0,245,212,.3);color:var(--cyan);}
+.ab-del{background:rgba(255,45,120,.1);border-color:rgba(255,45,120,.3);color:var(--pink);}
+.empty{text-align:center;padding:72px 24px;color:var(--muted);}
+.empty .ei{font-size:52px;margin-bottom:14px;}
+.empty h3{font-family:var(--fh);font-size:20px;font-weight:700;color:var(--white);margin-bottom:8px;}
 
-/* History */
-.history-card{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:20px;padding:28px;
-}
-.hist-title{font-family:var(--fh);font-size:14px;font-weight:700;
-  color:var(--muted);text-transform:uppercase;letter-spacing:.08em;
-  margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
-.clear-btn{font-size:12px;color:var(--pink);cursor:pointer;font-weight:600;}
-.hist-empty{text-align:center;padding:24px;color:var(--muted);font-size:14px;}
-.hist-item{
-  background:var(--bg3);border:1px solid var(--border);border-radius:12px;
-  padding:12px 16px;margin-bottom:8px;
-  display:flex;align-items:center;gap:12px;
-}
-.hist-url{font-size:12px;color:var(--cyan);font-family:'Courier New',monospace;
-  flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.hist-meta{font-size:11px;color:var(--muted);margin-top:2px;}
-.hist-copy{background:none;border:none;color:var(--muted);cursor:pointer;
-  font-size:16px;padding:4px;flex-shrink:0;transition:color .2s;}
-.hist-copy:hover{color:var(--cyan);}
-.hist-del{background:none;border:none;color:var(--muted);cursor:pointer;
-  font-size:14px;padding:4px;flex-shrink:0;transition:color .2s;}
-.hist-del:hover{color:var(--pink);}
-
-/* Toast */
-.toast{
-  position:fixed;bottom:24px;right:24px;z-index:9999;
-  background:var(--bg2);border:1px solid rgba(0,245,212,.3);
-  color:var(--cyan);padding:12px 20px;border-radius:12px;
-  font-size:14px;font-weight:600;
-  transform:translateY(80px);opacity:0;
-  transition:transform .3s,opacity .3s;pointer-events:none;
-}
+/* Form */
+.form-card{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:18px;}
+.form-card.hl{border-color:rgba(0,245,212,.25);}
+.fc-title{font-size:11px;font-weight:700;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px;}
+.f-row{margin-bottom:15px;}
+.f-lbl{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;display:block;}
+.f-req{color:var(--pink);}
+.f-hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5;}
+.f-in,.f-sel,.f-ta{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--white);font-family:var(--fb);font-size:14px;outline:none;transition:border-color .2s;}
+.f-in:focus,.f-sel:focus,.f-ta:focus{border-color:rgba(0,245,212,.45);}
+.f-in::placeholder,.f-ta::placeholder{color:var(--muted);}
+.f-ta{resize:vertical;min-height:80px;line-height:1.6;}
+.f-g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.f-g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.swatches{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;}
+.sw{width:34px;height:34px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:border-color .15s,transform .15s;}
+.sw:hover,.sw.sel{border-color:var(--white);transform:scale(1.1);}
+.bg-prev-row{display:flex;gap:10px;align-items:center;}
+#bgPrev{width:48px;height:48px;border-radius:10px;flex-shrink:0;border:1px solid var(--border);}
+.form-actions{display:flex;gap:12px;position:sticky;bottom:0;background:var(--bg);padding:16px 0;border-top:1px solid var(--border);margin-top:4px;}
+.save-btn{flex:1;background:linear-gradient(135deg,var(--pink),#ff6060);color:#fff;border:none;padding:14px;border-radius:12px;font-family:var(--fh);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .2s;}
+.save-btn:hover{opacity:.9;}
+.save-btn:disabled{opacity:.6;cursor:not-allowed;}
+.cancel-btn{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);padding:14px 24px;border-radius:12px;font-family:var(--fh);font-size:14px;font-weight:700;cursor:pointer;}
+.cancel-btn:hover{background:rgba(255,255,255,.1);color:var(--white);}
+.prof-btn{background:linear-gradient(135deg,var(--pink),#ff6060);color:#fff;border:none;padding:14px 36px;border-radius:12px;font-family:var(--fh);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .2s;}
+.prof-btn:hover{opacity:.9;}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--bg2);border:1px solid rgba(0,245,212,.3);color:var(--cyan);padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;transform:translateY(80px);opacity:0;transition:transform .3s,opacity .3s;pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1;}
 
-@media(max-width:580px){
+@media(max-width:768px){
+  .admin-layout{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .main{padding:20px 16px;}
   .topbar{padding:12px 16px;}
-  .content{padding:28px 16px;}
-  .gen-row{flex-direction:column;}
-  .gen-card{padding:24px 20px;}
+  .f-g2,.f-g3{grid-template-columns:1fr;}
+  .brand-item{flex-wrap:wrap;}
+  .bi-actions{width:100%;}
+  .ab{flex:1;text-align:center;}
 }
 </style>
 </head>
@@ -194,12 +140,12 @@ a{color:inherit;text-decoration:none;}
 
 <!-- LOGIN -->
 <div id="loginScreen">
-  <div class="login-card">
-    <div class="login-icon">⚡</div>
-    <h1 class="login-title">Admin Tools</h1>
-    <p class="login-sub">Halaman privat untuk generate & kelola affiliate link kamu.</p>
+  <div class="login-wrap">
+    <div class="login-icon">🛍️</div>
+    <h1 class="login-title">Brand Manager</h1>
+    <p class="login-sub">Halaman privat untuk mengelola brand di website TikTok kamu.</p>
     <input type="password" class="login-input" id="pwInput"
-      placeholder="Password"
+      placeholder="Masukkan password"
       onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">Masuk →</button>
     <p class="login-err" id="loginErr">⚠ Password salah. Coba lagi.</p>
@@ -208,268 +154,160 @@ a{color:inherit;text-decoration:none;}
 </div>
 
 <!-- MAIN APP -->
-<div id="mainApp">
-
-  <!-- Topbar -->
+<div id="adminApp">
   <div class="topbar">
-    <div class="topbar-logo">⚡ <span>Affiliate</span> Tools</div>
-    <div style="display:flex;gap:10px;align-items:center;">
-      <a href="index.html" class="topbar-home">🏠 Lihat Website</a>
+    <div class="topbar-logo">⚙️ <span>Brand</span> Manager</div>
+    <div class="topbar-nav">
+      <button class="tnav-btn active" onclick="goTab('brands',this)">🛍️ Brand</button>
+      <button class="tnav-btn" onclick="goTab('profile',this)">👤 Profil</button>
+      <span class="save-ind" id="saveInd">✅ Tersimpan</span>
+      <a href="index.html" class="tnav-home">🏠 Lihat Website</a>
     </div>
   </div>
 
-  <!-- Content -->
-  <div class="content">
-    <h1 class="page-title">⚡ Affiliate Link Generator</h1>
-    <p class="page-sub">Paste affiliate link dari Shopee, TikTok Shop, atau Tokopedia — lalu format dengan UTM tracking agar kamu bisa monitor performa setiap link.</p>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <span class="sb-lbl">Kelola Brand</span>
+      <button class="sb-btn active" onclick="goTab('brands',this)">
+        <span class="sb-icon">🛍️</span>Daftar Brand
+        <span class="sb-badge" id="sbCount">0</span>
+      </button>
+      <button class="sb-btn" onclick="showForm()">
+        <span class="sb-icon">➕</span>Tambah Brand
+      </button>
+      <div class="sb-divider"></div>
+      <span class="sb-lbl">Pengaturan</span>
+      <button class="sb-btn" onclick="goTab('profile',this)">
+        <span class="sb-icon">👤</span>Profil Saya
+      </button>
+      <div class="sb-divider"></div>
+      <button class="sb-btn" onclick="doLogout()" style="color:#ff6060;">
+        <span class="sb-icon">🚪</span>Logout
+      </button>
+    </aside>
 
-    <!-- Platform info -->
-    <div class="platform-badges">
-      <div class="pbadge" style="background:rgba(255,45,120,.12);border:1px solid rgba(255,45,120,.3);color:#ff2d78;">♪ TikTok Shop</div>
-      <div class="pbadge" style="background:rgba(238,77,45,.12);border:1px solid rgba(238,77,45,.3);color:#ee4d2d;">🛒 Shopee Affiliate</div>
-      <div class="pbadge" style="background:rgba(66,181,73,.12);border:1px solid rgba(66,181,73,.3);color:#42b549;">🏪 Tokopedia Affiliate</div>
-      <div class="pbadge" style="background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);">🔗 Custom Link</div>
-    </div>
+    <main class="main">
 
-    <!-- Generator -->
-    <div class="gen-card">
-      <div class="gen-label">🔗 Generate Affiliate Link</div>
-
-      <!-- URL Input -->
-      <div class="gen-row">
-        <input type="text" class="gen-input" id="genUrl"
-          placeholder="Paste affiliate link (shope.ee/xxx · vt.tiktok.com/xxx · tokopedia.link/xxx)">
-      </div>
-
-      <!-- Username + Category -->
-      <div class="gen-row">
-        <input type="text" class="gen-input" id="genUser"
-          placeholder="Username TikTok kamu (@yourname)">
-        <select class="gen-select" id="genCat">
-          <option value="fashion">👗 Fashion</option>
-          <option value="beauty">💄 Beauty</option>
-          <option value="tech">📱 Tech</option>
-          <option value="fitness">🏋️ Fitness</option>
-          <option value="food">🍔 Food</option>
-          <option value="home">🏠 Home</option>
-          <option value="gaming">🎮 Gaming</option>
-          <option value="other">✨ Other</option>
-        </select>
-      </div>
-
-      <!-- Campaign name (optional) -->
-      <div class="gen-row">
-        <input type="text" class="gen-input" id="genCampaign"
-          placeholder="Nama campaign (opsional) — e.g. ramadan2026, review_video">
-      </div>
-
-      <button class="gen-btn" onclick="generateLink()">⚡ Generate My Affiliate Link</button>
-
-      <!-- Result -->
-      <div class="result-box" id="resultBox">
-        <div style="flex:1;min-width:0;">
-          <div class="result-url" id="resultUrl"></div>
-          <p id="platInfo" class="plat-info"></p>
-        </div>
-        <button class="copy-btn" onclick="copyLink()">📋 Copy</button>
-      </div>
-
-      <p class="gen-note">
-        ✅ <strong style="color:var(--white)">Tracking otomatis</strong> oleh platform (Shopee/TikTok/Tokopedia) — tidak perlu backend.<br>
-        UTM parameter ditambahkan untuk tracking tambahan di Google Analytics jika diperlukan.
-      </p>
-    </div>
-
-    <!-- History -->
-    <div class="history-card">
-      <div class="hist-title">
-        📋 Riwayat Link
-        <span class="clear-btn" onclick="clearHistory()">Hapus Semua</span>
-      </div>
-      <div id="historyList"></div>
-    </div>
-
-  </div>
-</div>
-
-<!-- Brand Manager Toggle - shown after login -->
-<style>
-#brandManagerBtn{display:none;position:fixed;bottom:24px;right:24px;z-index:300;
-  background:var(--pink);color:#fff;border:none;padding:12px 20px;border-radius:100px;
-  font-family:var(--fh);font-size:14px;font-weight:700;cursor:pointer;
-  box-shadow:0 4px 20px rgba(255,45,120,.4);}
-#brandManager{display:none;padding:0 0 60px;}
-.bm-topbar{background:rgba(10,10,15,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.bm-topbar-logo{font-family:var(--fh);font-size:17px;font-weight:800;}
-.bm-topbar-logo span{color:var(--pink);}
-.bm-nav{display:flex;gap:8px;flex-wrap:wrap;}
-.bm-navbtn{background:none;border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--fb);transition:all .2s;}
-.bm-navbtn:hover{border-color:rgba(255,45,120,.3);color:var(--white);}
-.bm-navbtn.active{background:var(--pink);border-color:var(--pink);color:#fff;}
-.bm-content{max-width:860px;margin:0 auto;padding:32px 24px;}
-.bm-section{display:none;}.bm-section.active{display:block;}
-.bm-title{font-family:var(--fh);font-size:22px;font-weight:800;margin-bottom:4px;}
-.bm-sub{font-size:13px;color:var(--muted);margin-bottom:22px;}
-.bm-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px;}
-.bm-card-title{font-size:11px;font-weight:700;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;}
-.bf-row{margin-bottom:14px;}.bf-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px;display:block;}.bf-req{color:var(--pink);}
-.bf-input,.bf-select,.bf-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--white);font-family:var(--fb);font-size:14px;outline:none;transition:border-color .2s;}
-.bf-input:focus,.bf-select:focus,.bf-textarea:focus{border-color:rgba(0,245,212,.4);}
-.bf-input::placeholder,.bf-textarea::placeholder{color:var(--muted);}
-.bf-textarea{resize:vertical;min-height:72px;line-height:1.6;}
-.bf-g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}.bf-g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}.bf-hint{font-size:11px;color:var(--muted);margin-top:4px;}
-.swatch{width:32px;height:32px;border-radius:8px;cursor:pointer;border:2px solid transparent;display:inline-block;transition:border-color .15s,transform .15s;margin:0 2px;}
-.swatch:hover,.swatch.sel{border-color:var(--white);transform:scale(1.1);}
-.bg-prev-row{display:flex;gap:10px;align-items:center;margin-top:8px;}
-#bgPrev{width:46px;height:46px;border-radius:10px;flex-shrink:0;border:1px solid var(--border);}
-.bm-form-actions{display:flex;gap:10px;position:sticky;bottom:0;background:var(--bg);padding:14px 0;border-top:1px solid var(--border);margin-top:8px;}
-.save-brand-btn{flex:1;background:linear-gradient(135deg,var(--pink),#ff6060);color:#fff;border:none;padding:13px;border-radius:12px;font-family:var(--fh);font-size:15px;font-weight:700;cursor:pointer;}
-.cancel-brand-btn{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);padding:13px 22px;border-radius:12px;font-family:var(--fh);font-size:14px;font-weight:700;cursor:pointer;}
-.prof-save-btn{background:linear-gradient(135deg,var(--pink),#ff6060);color:#fff;border:none;padding:13px 32px;border-radius:12px;font-family:var(--fh);font-size:15px;font-weight:700;cursor:pointer;}
-@media(max-width:600px){.bf-g2,.bf-g3{grid-template-columns:1fr;}.bm-content{padding:20px 16px;}}
-</style>
-
-<button id="brandManagerBtn" onclick="toggleBrandManager()">🛍️ Brand Manager</button>
-
-<div id="brandManager">
-  <div class="bm-topbar">
-    <div class="bm-topbar-logo">⚙️ <span>Brand</span> Manager</div>
-    <div class="bm-nav">
-      <button class="bm-navbtn active" onclick="bmTab('brands',this)">🛍️ Daftar Brand</button>
-      <button class="bm-navbtn" onclick="bmTab('profile',this)">👤 Profil</button>
-      <button class="bm-navbtn" onclick="toggleBrandManager()">← Affiliate Tool</button>
-      <a href="index.html" class="bm-navbtn">🏠 Lihat Website</a>
-    </div>
-  </div>
-  <div class="bm-content">
-    <!-- BRAND LIST / FORM -->
-    <div class="bm-section active" id="bm-brands">
-      <div id="brandListSection">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
-          <div>
-            <h2 class="bm-title">Daftar Brand</h2>
-            <p class="bm-sub">Total: <strong id="brandCount" style="color:var(--white)">0</strong> brand di website kamu.</p>
+      <!-- BRAND PAGE -->
+      <div id="pgBrands">
+        <div id="listView">
+          <div class="list-hdr">
+            <div>
+              <h1 class="pg-title">Daftar Brand</h1>
+              <p class="pg-sub">Total <strong id="brandCount" style="color:var(--white)">0</strong> brand tampil di website.</p>
+            </div>
+            <button class="add-btn" onclick="showForm()">+ Tambah Brand Baru</button>
           </div>
-          <button onclick="showBrandForm()" style="background:var(--pink);color:#fff;border:none;padding:10px 22px;border-radius:100px;font-family:var(--fh);font-size:14px;font-weight:700;cursor:pointer;">+ Tambah Brand Baru</button>
-        </div>
-        <div id="brandListEl"></div>
-      </div>
-      <div id="brandFormSection" style="display:none;">
-        <h2 class="bm-title" id="brandFormTitle">+ Tambah Brand Baru</h2>
-        <p class="bm-sub">Isi form — brand langsung tampil di website setelah disimpan.</p>
-        <div class="bm-card">
-          <div class="bm-card-title">📋 Informasi Brand</div>
-          <div class="bf-g2">
-            <div class="bf-row"><label class="bf-label">Emoji</label><input class="bf-input" id="bf_emoji" placeholder="👗" maxlength="4"></div>
-            <div class="bf-row"><label class="bf-label">Nama Brand <span class="bf-req">*</span></label><input class="bf-input" id="bf_name" placeholder="e.g. Zara"></div>
-          </div>
-          <div class="bf-g2">
-            <div class="bf-row"><label class="bf-label">Kategori</label>
-              <select class="bf-select" id="bf_cat">
-                <option value="fashion">👗 Fashion</option><option value="beauty">💄 Beauty</option>
-                <option value="tech">📱 Tech</option><option value="fitness">🏋️ Fitness</option>
-                <option value="food">🍔 Food</option><option value="home">🏠 Home</option>
-                <option value="gaming">🎮 Gaming</option><option value="other">✨ Other</option>
-              </select></div>
-            <div class="bf-row"><label class="bf-label">Badge</label>
-              <select class="bf-select" id="bf_badge">
-                <option value="none">— Tidak ada</option><option value="hot">🔥 HOT</option>
-                <option value="top">⭐ TOP</option><option value="new">✨ NEW</option>
-              </select></div>
-          </div>
-          <div class="bf-row"><label class="bf-label">Deskripsi</label><textarea class="bf-textarea" id="bf_desc" placeholder="Ceritakan pengalamanmu..."></textarea></div>
-          <div class="bf-row"><label class="bf-label">Hashtag (pisah koma)</label><input class="bf-input" id="bf_tags" placeholder="#OOTD, #FashionTok"></div>
-          <div class="bf-row"><label class="bf-label">Jumlah Video TikTok</label><input class="bf-input" id="bf_videos" placeholder="12" type="number" min="0"></div>
-        </div>
-        <div class="bm-card" style="border-color:rgba(0,245,212,.2)">
-          <div class="bm-card-title">🔗 Affiliate Link</div>
-          <div class="bf-row"><label class="bf-label">Platform</label>
-            <select class="bf-select" id="bf_platform">
-              <option value="tiktok">♪ TikTok Shop</option><option value="shopee">🛒 Shopee Affiliate</option>
-              <option value="tokopedia">🏪 Tokopedia Affiliate</option><option value="custom">🔗 Custom</option>
-            </select></div>
-          <div class="bf-row">
-            <label class="bf-label">Affiliate Link <span class="bf-req">*</span></label>
-            <input class="bf-input" id="bf_affUrl" placeholder="https://shope.ee/xxx  atau  https://vt.tiktok.com/xxx">
-            <p class="bf-hint">Paste link dari Shopee / TikTok Shop / Tokopedia</p>
-          </div>
-          <div class="bf-row"><label class="bf-label">Website Resmi (backup)</label><input class="bf-input" id="bf_url" placeholder="https://www.brand.com"></div>
-        </div>
-        <div class="bm-card">
-          <div class="bm-card-title">📊 Statistik</div>
-          <div class="bf-g3">
-            <div class="bf-row"><label class="bf-label">Komisi (%)</label><input class="bf-input" id="bf_comm" placeholder="15" type="number" min="0" max="100"></div>
-            <div class="bf-row"><label class="bf-label">Cookie (hari)</label><input class="bf-input" id="bf_cookie" placeholder="30" type="number" min="1"></div>
-            <div class="bf-row"><label class="bf-label">Rating (1–5)</label><input class="bf-input" id="bf_rating" placeholder="4.5" type="number" step="0.1" min="1" max="5"></div>
+          <div id="brandListEl">
+            <div class="empty"><div class="ei">⏳</div><h3>Memuat data...</h3></div>
           </div>
         </div>
-        <div class="bm-card">
-          <div class="bm-card-title">🎨 Warna Card</div>
-          <div id="swatchWrap" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;"></div>
-          <div class="bg-prev-row">
-            <input class="bf-input" id="bf_bg" oninput="updBgPrev()" placeholder="linear-gradient(...)">
-            <div id="bgPrev"></div>
+
+        <div id="formView" style="display:none">
+          <h1 class="pg-title" id="formTitle">Tambah Brand Baru</h1>
+          <p class="pg-sub">Isi form — brand langsung tampil di website setelah disimpan.</p>
+
+          <div class="form-card">
+            <div class="fc-title">📋 Informasi Brand</div>
+            <div class="f-g2">
+              <div class="f-row"><label class="f-lbl">Emoji</label><input class="f-in" id="fEmoji" placeholder="👗" maxlength="4"></div>
+              <div class="f-row"><label class="f-lbl">Nama Brand <span class="f-req">*</span></label><input class="f-in" id="fName" placeholder="e.g. Zara"></div>
+            </div>
+            <div class="f-g2">
+              <div class="f-row"><label class="f-lbl">Kategori</label>
+                <select class="f-sel" id="fCat">
+                  <option value="fashion">👗 Fashion</option><option value="beauty">💄 Beauty</option>
+                  <option value="tech">📱 Tech</option><option value="fitness">🏋️ Fitness</option>
+                  <option value="food">🍔 Food</option><option value="home">🏠 Home</option>
+                  <option value="gaming">🎮 Gaming</option><option value="other">✨ Other</option>
+                </select>
+              </div>
+              <div class="f-row"><label class="f-lbl">Badge</label>
+                <select class="f-sel" id="fBadge">
+                  <option value="none">— Tidak ada</option><option value="hot">🔥 HOT</option>
+                  <option value="top">⭐ TOP</option><option value="new">✨ NEW</option>
+                </select>
+              </div>
+            </div>
+            <div class="f-row"><label class="f-lbl">Deskripsi</label><textarea class="f-ta" id="fDesc" placeholder="Ceritakan pengalamanmu pakai brand ini..."></textarea></div>
+            <div class="f-row"><label class="f-lbl">Hashtag (pisah koma)</label><input class="f-in" id="fTags" placeholder="#OOTD, #FashionTok"></div>
+            <div class="f-row"><label class="f-lbl">Jumlah Video TikTok</label><input class="f-in" id="fVideos" placeholder="12" type="number" min="0"></div>
+          </div>
+
+          <div class="form-card hl">
+            <div class="fc-title">🔗 Affiliate Link</div>
+            <div class="f-row"><label class="f-lbl">Platform</label>
+              <select class="f-sel" id="fPlatform">
+                <option value="tiktok">♪ TikTok Shop</option>
+                <option value="shopee">🛒 Shopee Affiliate</option>
+                <option value="tokopedia">🏪 Tokopedia Affiliate</option>
+                <option value="custom">🔗 Custom</option>
+              </select>
+            </div>
+            <div class="f-row">
+              <label class="f-lbl">Affiliate Link <span class="f-req">*</span></label>
+              <input class="f-in" id="fAffUrl" placeholder="https://shope.ee/xxx  atau  https://vt.tiktok.com/xxx">
+              <p class="f-hint">Paste link dari Shopee / TikTok Shop / Tokopedia. Klik brand di website akan membuka link ini.</p>
+            </div>
+            <div class="f-row"><label class="f-lbl">Website Resmi (backup)</label><input class="f-in" id="fUrl" placeholder="https://www.brand.com"></div>
+          </div>
+
+          <div class="form-card">
+            <div class="fc-title">📊 Statistik Komisi</div>
+            <div class="f-g3">
+              <div class="f-row"><label class="f-lbl">Komisi (%)</label><input class="f-in" id="fComm" placeholder="15" type="number" min="0" max="100"></div>
+              <div class="f-row"><label class="f-lbl">Cookie (hari)</label><input class="f-in" id="fCookie" placeholder="30" type="number" min="1"></div>
+              <div class="f-row"><label class="f-lbl">Rating (1–5)</label><input class="f-in" id="fRating" placeholder="4.5" type="number" step="0.1" min="1" max="5"></div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="fc-title">🎨 Warna Card</div>
+            <div class="swatches" id="swatches"></div>
+            <div class="bg-prev-row">
+              <input class="f-in" id="fBg" oninput="updPrev()" placeholder="linear-gradient(...)">
+              <div id="bgPrev"></div>
+            </div>
+            <p class="f-hint" style="margin-top:6px">Klik warna di atas atau ketik kode gradient kustom</p>
+          </div>
+
+          <div class="form-actions">
+            <button class="cancel-btn" onclick="hideForm()">Batal</button>
+            <button class="save-btn" id="saveBtn" onclick="saveBrand()">💾 Simpan Brand</button>
           </div>
         </div>
-        <div class="bm-form-actions">
-          <button class="cancel-brand-btn" onclick="hideBrandForm()">Batal</button>
-          <button class="save-brand-btn" onclick="saveBrand()">💾 Simpan Brand</button>
-        </div>
       </div>
-    </div>
-    <!-- PROFILE -->
-    <div class="bm-section" id="bm-profile">
-      <h2 class="bm-title">Profil Saya</h2>
-      <p class="bm-sub">Perubahan langsung live di website!</p>
-      <div class="bm-card">
-        <div class="bm-card-title">👤 Data Profil</div>
-        <div class="bf-row"><label class="bf-label">Username TikTok</label><input class="bf-input" id="sName" placeholder="@yourname"></div>
-        <div class="bf-row"><label class="bf-label">Bio</label><textarea class="bf-textarea" id="sBio" placeholder="Deskripsi singkat..."></textarea></div>
-        <div class="bf-g3">
-          <div class="bf-row"><label class="bf-label">Followers</label><input class="bf-input" id="sFollowers" placeholder="1.2M"></div>
-          <div class="bf-row"><label class="bf-label">Total Likes</label><input class="bf-input" id="sLikes" placeholder="48.5M"></div>
-          <div class="bf-row"><label class="bf-label">Engagement</label><input class="bf-input" id="sEngagement" placeholder="8.3%"></div>
+
+      <!-- PROFILE PAGE -->
+      <div id="pgProfile" style="display:none">
+        <h1 class="pg-title">Profil Saya</h1>
+        <p class="pg-sub">Informasi yang tampil di halaman utama website. Perubahan langsung live!</p>
+        <div class="form-card">
+          <div class="fc-title">👤 Data Profil</div>
+          <div class="f-row"><label class="f-lbl">Username TikTok</label><input class="f-in" id="sName" placeholder="@yourname"></div>
+          <div class="f-row"><label class="f-lbl">Bio</label><textarea class="f-ta" id="sBio" placeholder="Deskripsi singkat..."></textarea></div>
+          <div class="f-g3">
+            <div class="f-row"><label class="f-lbl">Followers</label><input class="f-in" id="sFollowers" placeholder="1.2M"></div>
+            <div class="f-row"><label class="f-lbl">Total Likes</label><input class="f-in" id="sLikes" placeholder="48.5M"></div>
+            <div class="f-row"><label class="f-lbl">Engagement</label><input class="f-in" id="sEngagement" placeholder="8.3%"></div>
+          </div>
+          <div class="f-row"><label class="f-lbl">URL TikTok</label><input class="f-in" id="sTiktokUrl" placeholder="https://tiktok.com/@yourname"></div>
         </div>
-        <div class="bf-row"><label class="bf-label">URL TikTok</label><input class="bf-input" id="sTiktokUrl" placeholder="https://tiktok.com/@yourname"></div>
+        <button class="prof-btn" onclick="saveProfile()">💾 Simpan & Langsung Live</button>
       </div>
-      <button class="prof-save-btn" onclick="saveProfile()">💾 Simpan & Langsung Live</button>
-    </div>
+
+    </main>
   </div>
 </div>
-
-<script>
-// Tab switching for brand manager
-function bmTab(tab, btn){
-  document.querySelectorAll('.bm-navbtn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.bm-section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('bm-'+tab).classList.add('active');
-}
-function toggleBrandManager(){
-  const bm   = document.getElementById('brandManager');
-  const main = document.getElementById('mainApp');
-  const btn  = document.getElementById('brandManagerBtn');
-  if(bm.style.display==='none'||!bm.style.display){
-    bm.style.display='block'; main.style.display='none';
-    btn.textContent='← Affiliate Tool';
-  } else {
-    bm.style.display='none'; main.style.display='block';
-    btn.textContent='🛍️ Brand Manager';
-  }
-}
-</script>
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase SDK -->
 <script type="module">
-import { initializeApp }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, doc, addDoc, setDoc,
-         updateDoc, deleteDoc, onSnapshot,
-         query, orderBy, serverTimestamp, getDoc }
-                            from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc,
+         onSnapshot, getDoc, query, orderBy, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-// ── Firebase Config ───────────────────────────────
 const firebaseConfig = {
   apiKey:            "AIzaSyCVNoonIcyMI0yS3bX13DA89j1TZ0ZOHD0",
   authDomain:        "my-tiktok-picks.firebaseapp.com",
@@ -482,324 +320,222 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-// ── Config ────────────────────────────────────────
 const ADMIN_PASS = '1234'; // ← GANTI PASSWORD ANDA
-const HIST_KEY   = 'tikaf_link_history'; // history tetap lokal
+
+const CAT_MAP = {fashion:'👗 Fashion',beauty:'💄 Beauty',tech:'📱 Tech',fitness:'🏋️ Fitness',food:'🍔 Food',home:'🏠 Home',gaming:'🎮 Gaming',other:'✨ Other'};
+const BGS = ['linear-gradient(135deg,#1a1a2e,#2d2d4e)','linear-gradient(135deg,#1f0a1f,#3d1a3d)','linear-gradient(135deg,#0a1a0a,#1a3a1a)','linear-gradient(135deg,#0a1628,#1a2a4e)','linear-gradient(135deg,#0a1a2a,#1a3a4e)','linear-gradient(135deg,#2a0a0a,#4e1a1a)','linear-gradient(135deg,#1a1a0a,#3a3a1a)','linear-gradient(135deg,#1a0a0a,#2a1212)','linear-gradient(135deg,#1a1a1a,#2a2a2a)','linear-gradient(135deg,#0a1a1a,#1a3a3a)'];
+
+let BRANDS = [], editDocId = null;
+
+// ── Utils ─────────────────────────────────────────
+function toast(msg, err=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.borderColor=err?'rgba(255,45,120,.4)':'rgba(0,245,212,.3)';
+  t.style.color=err?'var(--pink)':'var(--cyan)';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+function showSaved(){
+  const el=document.getElementById('saveInd');
+  el.style.opacity='1';
+  setTimeout(()=>el.style.opacity='0',2500);
+}
+function setCount(n){
+  document.getElementById('brandCount').textContent=n;
+  document.getElementById('sbCount').textContent=n;
+}
 
 // ── Login ─────────────────────────────────────────
-window.doLogin = function(){
-  const pw = document.getElementById('pwInput').value;
-  if(pw === ADMIN_PASS){
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display     = 'block';
-    document.getElementById('brandManagerBtn').style.display = 'flex';
-    renderHistory();
-  } else {
-    document.getElementById('loginErr').style.display = 'block';
-    document.getElementById('pwInput').value = '';
+window.doLogin=function(){
+  const pw=document.getElementById('pwInput').value;
+  if(pw===ADMIN_PASS){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('adminApp').style.display='block';
+    loadProfileForm();
+  }else{
+    document.getElementById('loginErr').style.display='block';
+    document.getElementById('pwInput').value='';
     document.getElementById('pwInput').focus();
-    setTimeout(()=>document.getElementById('loginErr').style.display='none', 3000);
+    setTimeout(()=>document.getElementById('loginErr').style.display='none',3000);
   }
 };
-document.getElementById('pwInput').addEventListener('keydown', e=>{
-  if(e.key==='Enter') doLogin();
-});
-
-// ── Generate Link ─────────────────────────────────
-window.generateLink = function(){
-  const url      = document.getElementById('genUrl').value.trim();
-  const user     = document.getElementById('genUser').value.trim().replace('@','');
-  const cat      = document.getElementById('genCat').value;
-  const campaign = document.getElementById('genCampaign').value.trim() || cat+'_content';
-  if(!url){ flashErr('Paste affiliate link dulu!'); return; }
-  if(!user){ flashErr('Isi username TikTok kamu!'); return; }
-  let platform = 'custom', platLabel = '🔗 Custom link';
-  if(url.includes('shope.ee')||url.includes('shopee.co.id')){
-    platform='shopee'; platLabel='🛒 Shopee Affiliate — tracking otomatis oleh Shopee';
-  } else if(url.includes('tiktok.com')||url.includes('vt.tik')){
-    platform='tiktok'; platLabel='♪ TikTok Shop — tracking otomatis oleh TikTok';
-  } else if(url.includes('tokopedia')){
-    platform='tokopedia'; platLabel='🏪 Tokopedia Affiliate — tracking otomatis oleh Tokopedia';
-  }
-  let finalUrl = url;
-  try{
-    const u = new URL(url.startsWith('http')?url:'https://'+url);
-    u.searchParams.set('utm_source','tiktok');
-    u.searchParams.set('utm_medium','bio');
-    u.searchParams.set('utm_campaign', campaign);
-    u.searchParams.set('utm_content', user);
-    finalUrl = u.toString();
-  }catch(e){ finalUrl = url; }
-  document.getElementById('resultUrl').textContent  = finalUrl;
-  document.getElementById('platInfo').textContent   = platLabel;
-  document.getElementById('platInfo').style.display = 'block';
-  document.getElementById('resultBox').classList.add('show');
-  document.getElementById('resultBox').scrollIntoView({behavior:'smooth',block:'nearest'});
-  saveHistory({url:finalUrl,original:url,platform,user,cat,campaign,time:new Date().toLocaleString('id-ID')});
-  renderHistory();
+window.doLogout=function(){
+  document.getElementById('adminApp').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('pwInput').value='';
 };
-function flashErr(msg){
-  const b = document.querySelector('.gen-btn');
-  b.style.background='#ff4444'; b.textContent='⚠ '+msg;
-  setTimeout(()=>{ b.style.background=''; b.textContent='⚡ Generate My Affiliate Link'; },2500);
-}
-window.copyLink = function(){
-  const url = document.getElementById('resultUrl').textContent;
-  navigator.clipboard.writeText(url).then(()=>{
-    const b = document.querySelector('.copy-btn'); b.textContent='✅ Tersalin!';
-    setTimeout(()=>b.textContent='📋 Copy',2000);
-  });
+document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')window.doLogin();});
+
+// ── Tabs ──────────────────────────────────────────
+window.goTab=function(tab,btn){
+  document.querySelectorAll('.tnav-btn,.sb-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.getElementById('pgBrands').style.display =tab==='brands' ?'block':'none';
+  document.getElementById('pgProfile').style.display=tab==='profile'?'block':'none';
+  if(tab==='brands') hideForm();
 };
 
-// ── History (tetap localStorage) ─────────────────
-function loadHistory(){ try{ return JSON.parse(localStorage.getItem(HIST_KEY)||'[]'); }catch(e){ return []; } }
-function saveHistory(item){
-  const hist = loadHistory(); hist.unshift(item);
-  if(hist.length>30) hist.splice(30);
-  localStorage.setItem(HIST_KEY, JSON.stringify(hist));
-}
-function renderHistory(){
-  const hist = loadHistory();
-  const el   = document.getElementById('historyList');
-  if(!hist.length){ el.innerHTML=`<div class="hist-empty">Belum ada link yang digenerate.</div>`; return; }
-  const platIcon = {tiktok:'♪',shopee:'🛒',tokopedia:'🏪',custom:'🔗'};
-  el.innerHTML = hist.map((h,i)=>`
-    <div class="hist-item">
-      <div style="flex:1;min-width:0;">
-        <div class="hist-url">${h.url}</div>
-        <div class="hist-meta">${platIcon[h.platform]||'🔗'} ${h.platform} · @${h.user} · ${h.cat} · ${h.time}</div>
-      </div>
-      <button class="hist-copy" onclick="copyHistItem(${i})" title="Copy">📋</button>
-      <button class="hist-del"  onclick="delHistItem(${i})"  title="Hapus">✕</button>
-    </div>`).join('');
-}
-window.copyHistItem = function(i){ const h=loadHistory(); navigator.clipboard.writeText(h[i].url).then(()=>showToast('📋 Link tersalin!')); };
-window.delHistItem  = function(i){ const h=loadHistory(); h.splice(i,1); localStorage.setItem(HIST_KEY,JSON.stringify(h)); renderHistory(); };
-window.clearHistory = function(){
-  if(!confirm('Hapus semua riwayat link?')) return;
-  localStorage.removeItem(HIST_KEY); renderHistory(); showToast('🗑️ Riwayat dihapus.');
-};
-
-// ── Toast ─────────────────────────────────────────
-window.showToast = function(msg){
-  const t=document.getElementById('toast'); t.textContent=msg;
-  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500);
-};
-
-// ─────────────────────────────────────────────────
-// BRAND MANAGER — Firebase Firestore
-// ─────────────────────────────────────────────────
-const CAT_MAP = {fashion:'👗 Fashion',beauty:'💄 Beauty',tech:'📱 Tech',fitness:'🏋️ Fitness',food:'🍔 Food',home:'🏠 Home',gaming:'🎮 Gaming',other:'✨ Other'};
-const BGS = [
-  'linear-gradient(135deg,#1a1a2e,#2d2d4e)',
-  'linear-gradient(135deg,#1f0a1f,#3d1a3d)',
-  'linear-gradient(135deg,#0a1a0a,#1a3a1a)',
-  'linear-gradient(135deg,#0a1628,#1a2a4e)',
-  'linear-gradient(135deg,#0a1a2a,#1a3a4e)',
-  'linear-gradient(135deg,#2a0a0a,#4e1a1a)',
-  'linear-gradient(135deg,#1a1a0a,#3a3a1a)',
-  'linear-gradient(135deg,#1a0a0a,#2a1212)',
-  'linear-gradient(135deg,#1a1a1a,#2a2a2a)',
-  'linear-gradient(135deg,#0a1a1a,#1a3a3a)',
-];
-
-let BRANDS  = [];
-let editDocId = null; // Firestore doc ID saat edit
-
-// ── Live listen brands from Firestore ────────────
-const brandsQ = query(collection(db,'brands'), orderBy('createdAt','asc'));
-onSnapshot(brandsQ, snap=>{
-  BRANDS = snap.docs.map(d=>({ docId:d.id, ...d.data() }));
-  renderBrandList();
-  const cnt = document.getElementById('brandCount');
-  if(cnt) cnt.textContent = BRANDS.length;
-}, err=>console.error('Firestore error:',err));
-
-// ── Render brand list ─────────────────────────────
-function renderBrandList(){
-  const el = document.getElementById('brandListEl');
-  if(!el) return;
+// ── Brand List ────────────────────────────────────
+function renderList(){
+  const el=document.getElementById('brandListEl');
   if(!BRANDS.length){
-    el.innerHTML=`<div style="text-align:center;padding:60px;color:var(--muted);">
-      <div style="font-size:48px;margin-bottom:14px;">📭</div>
-      <p style="margin-bottom:16px">Belum ada brand.</p>
-      <button onclick="showBrandForm()" style="background:var(--pink);color:#fff;border:none;padding:10px 24px;border-radius:100px;cursor:pointer;font-family:var(--fh);font-weight:700">+ Tambah Brand Baru</button>
-    </div>`;
+    el.innerHTML=`<div class="empty"><div class="ei">📭</div><h3>Belum ada brand</h3><p style="margin-bottom:18px">Tambahkan brand pertama kamu!</p><button class="add-btn" onclick="showForm()">+ Tambah Brand Baru</button></div>`;
     return;
   }
-  el.innerHTML = BRANDS.map((b,i)=>`
-    <div style="display:flex;align-items:center;gap:14px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:10px;">
-      <div style="font-size:30px;width:46px;height:46px;border-radius:12px;background:${b.bg||'#1a1a2e'};display:flex;align-items:center;justify-content:center;flex-shrink:0">${b.emoji||'🛍️'}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-family:var(--fh);font-size:15px;font-weight:700">${b.name} <span style="font-size:11px;color:var(--muted);font-weight:400">${CAT_MAP[b.cat]||b.cat}</span></div>
-        <div style="font-size:12px;color:var(--muted);margin-top:3px">
-          ${b.comm||0}% komisi · Cookie: ${b.cookie||30}d ·
-          ${b.affUrl&&b.affUrl.startsWith('http')
-            ?'<span style="color:var(--cyan)">✓ Link set</span>'
-            :'<span style="color:#ff6060">✗ Link belum diisi</span>'}
-          · ${b.videos||0} videos
+  el.innerHTML=BRANDS.map(b=>`
+    <div class="brand-item">
+      <div class="bi-emoji" style="background:${b.bg||'#1a1a2e'}">${b.emoji||'🛍️'}</div>
+      <div class="bi-info">
+        <div class="bi-name">${b.name} <span style="font-size:11px;color:var(--muted);font-weight:400">${CAT_MAP[b.cat]||b.cat}</span></div>
+        <div class="bi-meta">
+          <span>${b.comm||0}% komisi</span>
+          <span>Cookie: ${b.cookie||30}d</span>
+          <span>${b.affUrl?.startsWith('http')?'<span class="link-ok">✓ Link set</span>':'<span class="link-no">✗ Link belum diisi</span>'}</span>
+          <span>${b.videos||0} videos</span>
         </div>
       </div>
-      <div style="display:flex;gap:8px;flex-shrink:0">
-        <button onclick="editBrand('${b.docId}')" style="background:rgba(0,245,212,.1);border:1px solid rgba(0,245,212,.3);color:var(--cyan);padding:7px 13px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">✏️ Edit</button>
-        <button onclick="deleteBrand('${b.docId}','${b.name}')" style="background:rgba(255,45,120,.1);border:1px solid rgba(255,45,120,.3);color:var(--pink);padding:7px 13px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">🗑️ Hapus</button>
+      <div class="bi-actions">
+        <button class="ab ab-edit" onclick="editBrand('${b.docId}')">✏️ Edit</button>
+        <button class="ab ab-del" onclick="delBrand('${b.docId}','${b.name}')">🗑️ Hapus</button>
       </div>
     </div>`).join('');
 }
 
-// ── Show/Hide brand form ──────────────────────────
-window.showBrandForm = function(){
-  editDocId = null;
-  resetBrandForm();
-  document.getElementById('brandFormSection').style.display='block';
-  document.getElementById('brandListSection').style.display='none';
-  document.getElementById('brandFormTitle').textContent='+ Tambah Brand Baru';
-  document.getElementById('brandFormSection').scrollIntoView({behavior:'smooth'});
+// ── Form ──────────────────────────────────────────
+window.showForm=function(){
+  editDocId=null; resetForm();
+  document.getElementById('formTitle').textContent='Tambah Brand Baru';
+  document.getElementById('listView').style.display='none';
+  document.getElementById('formView').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
 };
-window.hideBrandForm = function(){
-  document.getElementById('brandFormSection').style.display='none';
-  document.getElementById('brandListSection').style.display='block';
+window.hideForm=function(){
+  document.getElementById('formView').style.display='none';
+  document.getElementById('listView').style.display='block';
+  editDocId=null;
 };
-
-// ── Edit brand ────────────────────────────────────
-window.editBrand = function(docId){
-  const b = BRANDS.find(x=>x.docId===docId); if(!b) return;
-  editDocId = docId;
-  document.getElementById('brandFormTitle').textContent='Edit Brand: '+b.name;
-  document.getElementById('bf_emoji').value    = b.emoji   ||'';
-  document.getElementById('bf_name').value     = b.name    ||'';
-  document.getElementById('bf_cat').value      = b.cat     ||'fashion';
-  document.getElementById('bf_badge').value    = b.badge   ||'none';
-  document.getElementById('bf_desc').value     = b.desc    ||'';
-  document.getElementById('bf_tags').value     = b.tags    ||'';
-  document.getElementById('bf_videos').value   = b.videos  ||'0';
-  document.getElementById('bf_platform').value = b.platform||'shopee';
-  document.getElementById('bf_affUrl').value   = b.affUrl  ||'';
-  document.getElementById('bf_url').value      = b.url     ||'';
-  document.getElementById('bf_comm').value     = b.comm    ||'';
-  document.getElementById('bf_cookie').value   = b.cookie  ||'30';
-  document.getElementById('bf_rating').value   = b.rating  ||'4.5';
-  document.getElementById('bf_bg').value       = b.bg      ||BGS[0];
-  updBgPrev();
-  document.getElementById('brandFormSection').style.display='block';
-  document.getElementById('brandListSection').style.display='none';
-  document.getElementById('brandFormSection').scrollIntoView({behavior:'smooth'});
+window.editBrand=function(docId){
+  const b=BRANDS.find(x=>x.docId===docId);if(!b)return;
+  editDocId=docId;
+  document.getElementById('formTitle').textContent='Edit Brand: '+b.name;
+  document.getElementById('fEmoji').value=b.emoji||'';
+  document.getElementById('fName').value=b.name||'';
+  document.getElementById('fCat').value=b.cat||'fashion';
+  document.getElementById('fBadge').value=b.badge||'none';
+  document.getElementById('fDesc').value=b.desc||'';
+  document.getElementById('fTags').value=b.tags||'';
+  document.getElementById('fVideos').value=b.videos||'0';
+  document.getElementById('fPlatform').value=b.platform||'shopee';
+  document.getElementById('fAffUrl').value=b.affUrl||'';
+  document.getElementById('fUrl').value=b.url||'';
+  document.getElementById('fComm').value=b.comm||'';
+  document.getElementById('fCookie').value=b.cookie||'30';
+  document.getElementById('fRating').value=b.rating||'4.5';
+  document.getElementById('fBg').value=b.bg||BGS[0];
+  updPrev();
+  document.getElementById('listView').style.display='none';
+  document.getElementById('formView').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
 };
-
-function resetBrandForm(){
-  ['bf_emoji','bf_name','bf_desc','bf_tags','bf_affUrl','bf_url'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('bf_cat').value     ='fashion';
-  document.getElementById('bf_badge').value   ='none';
-  document.getElementById('bf_platform').value='shopee';
-  document.getElementById('bf_comm').value    ='';
-  document.getElementById('bf_cookie').value  ='30';
-  document.getElementById('bf_rating').value  ='4.5';
-  document.getElementById('bf_videos').value  ='0';
-  document.getElementById('bf_bg').value      = BGS[0];
-  updBgPrev();
+function resetForm(){
+  ['fEmoji','fName','fDesc','fTags','fAffUrl','fUrl'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fCat').value='fashion';
+  document.getElementById('fBadge').value='none';
+  document.getElementById('fPlatform').value='shopee';
+  document.getElementById('fComm').value='';
+  document.getElementById('fCookie').value='30';
+  document.getElementById('fRating').value='4.5';
+  document.getElementById('fVideos').value='0';
+  document.getElementById('fBg').value=BGS[0];
+  updPrev();
 }
 
-// ── Save brand to Firestore ───────────────────────
-window.saveBrand = async function(){
-  const name = document.getElementById('bf_name').value.trim();
-  if(!name){ showToast('⚠ Nama brand wajib diisi!'); return; }
-  const catVal = document.getElementById('bf_cat').value;
-  const brand = {
-    emoji:    document.getElementById('bf_emoji').value.trim()||'🛍️',
-    name,
-    cat:      catVal,
-    catLabel: CAT_MAP[catVal]||catVal,
-    badge:    document.getElementById('bf_badge').value,
-    desc:     document.getElementById('bf_desc').value.trim(),
-    tags:     document.getElementById('bf_tags').value.trim(),
-    videos:   document.getElementById('bf_videos').value.trim()||'0',
-    platform: document.getElementById('bf_platform').value,
-    affUrl:   document.getElementById('bf_affUrl').value.trim(),
-    url:      document.getElementById('bf_url').value.trim(),
-    comm:     document.getElementById('bf_comm').value.trim()||'0',
-    cookie:   document.getElementById('bf_cookie').value.trim()||'30',
-    rating:   document.getElementById('bf_rating').value.trim()||'4.5',
-    bg:       document.getElementById('bf_bg').value||BGS[0],
+// ── Save ──────────────────────────────────────────
+window.saveBrand=async function(){
+  const name=document.getElementById('fName').value.trim();
+  if(!name){toast('⚠ Nama brand wajib diisi!',true);return;}
+  const catVal=document.getElementById('fCat').value;
+  const data={
+    emoji:document.getElementById('fEmoji').value.trim()||'🛍️',
+    name,cat:catVal,catLabel:CAT_MAP[catVal]||catVal,
+    badge:document.getElementById('fBadge').value,
+    desc:document.getElementById('fDesc').value.trim(),
+    tags:document.getElementById('fTags').value.trim(),
+    videos:document.getElementById('fVideos').value.trim()||'0',
+    platform:document.getElementById('fPlatform').value,
+    affUrl:document.getElementById('fAffUrl').value.trim(),
+    url:document.getElementById('fUrl').value.trim(),
+    comm:document.getElementById('fComm').value.trim()||'0',
+    cookie:document.getElementById('fCookie').value.trim()||'30',
+    rating:document.getElementById('fRating').value.trim()||'4.5',
+    bg:document.getElementById('fBg').value||BGS[0],
   };
-  const btn = document.querySelector('#brandFormSection .save-brand-btn');
-  btn.disabled=true; btn.textContent='💾 Menyimpan...';
+  const btn=document.getElementById('saveBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Menyimpan...';
   try{
     if(editDocId){
-      await updateDoc(doc(db,'brands',editDocId), brand);
-      showToast('✅ Brand berhasil diupdate!');
-    } else {
-      await addDoc(collection(db,'brands'), {...brand, createdAt: serverTimestamp()});
-      showToast('✅ Brand berhasil ditambahkan!');
+      await updateDoc(doc(db,'brands',editDocId),data);
+      toast('✅ Brand berhasil diupdate!');
+    }else{
+      await addDoc(collection(db,'brands'),{...data,createdAt:serverTimestamp()});
+      toast('✅ Brand ditambahkan dan langsung live!');
     }
-    editDocId = null;
-    hideBrandForm();
-  } catch(err){
-    showToast('❌ Gagal simpan: '+err.message);
-    console.error(err);
-  }
-  btn.disabled=false; btn.textContent='💾 Simpan Brand';
+    showSaved();editDocId=null;hideForm();
+  }catch(err){toast('❌ Gagal: '+err.message,true);console.error(err);}
+  btn.disabled=false;btn.innerHTML='💾 Simpan Brand';
 };
 
-// ── Delete brand from Firestore ───────────────────
-window.deleteBrand = async function(docId, name){
-  if(!confirm(`Hapus brand "${name}"? Tidak bisa dibatalkan!`)) return;
-  try{
-    await deleteDoc(doc(db,'brands',docId));
-    showToast('🗑️ Brand dihapus.');
-  }catch(err){ showToast('❌ Gagal hapus: '+err.message); }
+// ── Delete ────────────────────────────────────────
+window.delBrand=async function(docId,name){
+  if(!confirm(`Hapus brand "${name}"?`))return;
+  try{await deleteDoc(doc(db,'brands',docId));toast('🗑️ Brand dihapus.');showSaved();}
+  catch(err){toast('❌ Gagal hapus: '+err.message,true);}
 };
 
-// ── Save Settings (Profile) to Firestore ─────────
-window.saveProfile = async function(){
-  const s = {
-    name:       document.getElementById('sName').value.trim(),
-    bio:        document.getElementById('sBio').value.trim(),
-    followers:  document.getElementById('sFollowers').value.trim(),
-    likes:      document.getElementById('sLikes').value.trim(),
-    engagement: document.getElementById('sEngagement').value.trim(),
-    tiktokUrl:  document.getElementById('sTiktokUrl').value.trim(),
-  };
-  try{
-    await setDoc(doc(db,'settings','profile'), s);
-    showToast('✅ Profil tersimpan dan langsung live!');
-  }catch(err){ showToast('❌ Gagal simpan: '+err.message); }
-};
-
-// Load existing profile into form
+// ── Profile ───────────────────────────────────────
 async function loadProfileForm(){
   try{
-    const snap = await getDoc(doc(db,'settings','profile'));
+    const snap=await getDoc(doc(db,'settings','profile'));
     if(snap.exists()){
-      const s = snap.data();
-      document.getElementById('sName').value       = s.name       ||'';
-      document.getElementById('sBio').value        = s.bio        ||'';
-      document.getElementById('sFollowers').value  = s.followers  ||'';
-      document.getElementById('sLikes').value      = s.likes      ||'';
-      document.getElementById('sEngagement').value = s.engagement ||'';
-      document.getElementById('sTiktokUrl').value  = s.tiktokUrl  ||'';
+      const s=snap.data();
+      document.getElementById('sName').value=s.name||'';
+      document.getElementById('sBio').value=s.bio||'';
+      document.getElementById('sFollowers').value=s.followers||'';
+      document.getElementById('sLikes').value=s.likes||'';
+      document.getElementById('sEngagement').value=s.engagement||'';
+      document.getElementById('sTiktokUrl').value=s.tiktokUrl||'';
     }
-  }catch(e){ console.log('No profile yet'); }
+  }catch(e){}
 }
-loadProfileForm();
-
-// ── Bg Preview ────────────────────────────────────
-window.updBgPrev = function(){
-  document.getElementById('bgPrev').style.background = document.getElementById('bf_bg').value||BGS[0];
+window.saveProfile=async function(){
+  const btn=document.querySelector('.prof-btn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Menyimpan...';
+  try{
+    await setDoc(doc(db,'settings','profile'),{
+      name:document.getElementById('sName').value.trim(),
+      bio:document.getElementById('sBio').value.trim(),
+      followers:document.getElementById('sFollowers').value.trim(),
+      likes:document.getElementById('sLikes').value.trim(),
+      engagement:document.getElementById('sEngagement').value.trim(),
+      tiktokUrl:document.getElementById('sTiktokUrl').value.trim(),
+    });
+    toast('✅ Profil tersimpan dan langsung live!');showSaved();
+  }catch(err){toast('❌ Gagal: '+err.message,true);}
+  btn.disabled=false;btn.innerHTML='💾 Simpan & Langsung Live';
 };
-window.pickBg = function(bg,el){
-  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));
-  el.classList.add('sel');
-  document.getElementById('bf_bg').value = bg;
-  updBgPrev();
-};
 
-// Build swatches on DOM ready
-window.addEventListener('DOMContentLoaded', ()=>{
-  const wrap = document.getElementById('swatchWrap');
-  if(wrap) wrap.innerHTML = BGS.map(bg=>`<div class="swatch" style="background:${bg}" onclick="pickBg('${bg}',this)"></div>`).join('');
-  updBgPrev();
-  // Show brand list section by default after login
-});
+// ── Realtime listener ─────────────────────────────
+onSnapshot(query(collection(db,'brands'),orderBy('createdAt','asc')),snap=>{
+  BRANDS=snap.docs.map(d=>({docId:d.id,...d.data()}));
+  renderList();setCount(BRANDS.length);
+},err=>{console.error(err);toast('⚠ Error load: '+err.message,true);});
+
+// ── Swatches ──────────────────────────────────────
+window.updPrev=function(){document.getElementById('bgPrev').style.background=document.getElementById('fBg').value||BGS[0];};
+window.pickBg=function(bg,el){document.querySelectorAll('.sw').forEach(s=>s.classList.remove('sel'));el.classList.add('sel');document.getElementById('fBg').value=bg;updPrev();};
+document.getElementById('swatches').innerHTML=BGS.map(bg=>`<div class="sw" style="background:${bg}" onclick="pickBg('${bg}',this)"></div>`).join('');
+updPrev();
 </script>
 </body>
 </html>
