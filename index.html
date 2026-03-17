@@ -187,6 +187,42 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 32px;
 #mComm{ display:none; }
 .bsv{font-family:var(--fh);font-size:13px;font-weight:700;text-align:center;}
 .bsl{font-size:10px;color:var(--muted);text-align:center;margin-top:1px;}
+/* Price display */
+.bprice{
+  display:flex;align-items:center;gap:6px;
+  flex-wrap:wrap;margin-bottom:8px;
+}
+.bprice-promo{
+  font-family:var(--fh);font-size:15px;font-weight:800;
+  color:var(--white);
+}
+.bprice-original{
+  font-size:12px;color:var(--muted);
+  text-decoration:line-through;
+}
+.bprice-disc{
+  font-size:11px;font-weight:700;color:var(--pink);
+  background:rgba(255,45,120,.12);
+  border:1px solid rgba(255,45,120,.25);
+  padding:2px 7px;border-radius:100px;
+}
+/* Modal price */
+.mprice{
+  display:flex;align-items:center;gap:8px;
+  flex-wrap:wrap;margin-bottom:12px;
+}
+.mprice-promo{
+  font-family:var(--fh);font-size:20px;font-weight:800;color:var(--white);
+}
+.mprice-original{
+  font-size:13px;color:var(--muted);text-decoration:line-through;
+}
+.mprice-disc{
+  font-size:12px;font-weight:700;color:var(--pink);
+  background:rgba(255,45,120,.12);border:1px solid rgba(255,45,120,.25);
+  padding:3px 9px;border-radius:100px;
+}
+
 /* Tombol selalu di bawah */
 .shopbtn{
   display:flex;align-items:center;justify-content:space-between;
@@ -545,10 +581,10 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:36px 32p
         <div class="mcomm" id="mComm"></div>
       </div>
       <div class="mstats" id="mStats"></div>
+      <div id="mPrice"></div>
       <p class="mdesc" id="mDesc"></p>
       <div class="mtags" id="mTags"></div>
       <button class="visit-btn" onclick="visitBrand()">🛍️ Kunjungi Website Brand →</button>
-      <button class="gen-modal-btn" onclick="goGenerate()">⚡ Generate Affiliate Link untuk Brand Ini</button>
     </div>
   </div>
 </div>
@@ -667,6 +703,40 @@ window.visitCard = function(idx, e){
   window.open(url,'_blank');
 };
 
+// ── Price helper ──────────────────────────────────
+function buildPrice(orig, promo){
+  if(!orig && !promo) return '';
+  const fmt = n => 'Rp'+Number(n).toLocaleString('id-ID');
+  const p   = promo ? Number(promo) : 0;
+  const o   = orig  ? Number(orig)  : 0;
+  if(p && o && o > p){
+    const disc = Math.round((o-p)/o*100);
+    return `<div class="bprice">
+      <span class="bprice-promo">${fmt(p)}</span>
+      <span class="bprice-original">${fmt(o)}</span>
+      <span class="bprice-disc">-${disc}%</span>
+    </div>`;
+  }
+  const display = p || o;
+  return `<div class="bprice"><span class="bprice-promo">${fmt(display)}</span></div>`;
+}
+function buildPriceModal(orig, promo){
+  if(!orig && !promo) return '';
+  const fmt = n => 'Rp'+Number(n).toLocaleString('id-ID');
+  const p   = promo ? Number(promo) : 0;
+  const o   = orig  ? Number(orig)  : 0;
+  if(p && o && o > p){
+    const disc = Math.round((o-p)/o*100);
+    return `<div class="mprice">
+      <span class="mprice-promo">${fmt(p)}</span>
+      <span class="mprice-original">${fmt(o)}</span>
+      <span class="mprice-disc">-${disc}%</span>
+    </div>`;
+  }
+  const display = p || o;
+  return `<div class="mprice"><span class="mprice-promo">${fmt(display)}</span></div>`;
+}
+
 // ── Render brands ─────────────────────────────────
 function renderBrands(cat){
   currentFilter = cat || 'all';
@@ -704,6 +774,7 @@ function renderBrands(cat){
         </div>
         <div class="bcat">${b.catLabel||b.cat}</div>
         ${buildDesc(b.desc||'', uid)}
+        ${buildPrice(b.priceOriginal, b.pricePromo)}
         <div class="bcard-spacer"></div>
         <div class="bstats">
           <div><div class="bsv">${b.cookie}d</div><div class="bsl">Cookie</div></div>
@@ -759,10 +830,11 @@ window.openModal = function(idx){
 
   document.getElementById('mName').textContent  = b.name;
   document.getElementById('mCat').textContent   = b.catLabel||b.cat;
-  document.getElementById('mComm').textContent  = '';   // komisi disembunyikan
+  document.getElementById('mComm').textContent  = '';
   document.getElementById('mStats').innerHTML   = `
     <div class="ms"><div class="msv" style="color:var(--cyan)">${b.cookie}d</div><div class="msl">Cookie</div></div>
     <div class="ms"><div class="msv" style="color:var(--yellow)">★${b.rating}</div><div class="msl">Rating</div></div>`;
+  document.getElementById('mPrice').innerHTML   = buildPriceModal(b.priceOriginal, b.pricePromo);
   document.getElementById('mDesc').textContent  = b.desc||'';
   const tags = (b.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
   document.getElementById('mTags').innerHTML    = tags.map(t=>`<span class="mtag">${t}</span>`).join('');
