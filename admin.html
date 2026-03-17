@@ -328,6 +328,28 @@ a{color:inherit;text-decoration:none;}
             </div>
           </div>
 
+          <div class="form-card" style="border-color:rgba(255,226,39,.2)">
+            <div class="fc-title">🏷️ Harga Produk (Opsional)</div>
+            <div class="f-g2">
+              <div class="f-row">
+                <label class="f-lbl">Harga Asli (Rp)</label>
+                <input class="f-in" id="fPriceOriginal" placeholder="599800" type="number" min="0" oninput="updatePricePreview()">
+                <p class="f-hint">Harga sebelum diskon. Contoh: 599800</p>
+              </div>
+              <div class="f-row">
+                <label class="f-lbl">Harga Promo (Rp)</label>
+                <input class="f-in" id="fPricePromo" placeholder="187963" type="number" min="0" oninput="updatePricePreview()">
+                <p class="f-hint">Harga setelah diskon. Contoh: 187963</p>
+              </div>
+            </div>
+            <div id="pricePreview" style="display:none;margin-top:12px;padding:12px 16px;background:var(--bg3);border-radius:10px;">
+              <span style="font-size:13px;color:var(--muted)">Preview: </span>
+              <span id="pvPromo" style="font-family:var(--fh);font-size:16px;font-weight:800;color:var(--white)"></span>
+              <span id="pvOriginal" style="font-size:12px;color:var(--muted);text-decoration:line-through;margin-left:8px"></span>
+              <span id="pvDiscount" style="font-size:12px;font-weight:700;color:var(--pink);margin-left:6px"></span>
+            </div>
+          </div>
+
           <div class="form-card">
             <div class="fc-title">🎨 Warna Card</div>
             <div class="swatches" id="swatches"></div>
@@ -604,6 +626,9 @@ window.editBrand=function(docId){
   document.getElementById('fComm').value=b.comm||'';
   document.getElementById('fCookie').value=b.cookie||'30';
   document.getElementById('fRating').value=b.rating||'4.5';
+  document.getElementById('fPriceOriginal').value=b.priceOriginal||'';
+  document.getElementById('fPricePromo').value=b.pricePromo||'';
+  updatePricePreview();
   document.getElementById('fBg').value=b.bg||BGS[0];
   updPrev();
   document.getElementById('listView').style.display='none';
@@ -620,6 +645,9 @@ function resetForm(){
   document.getElementById('fCookie').value='30';
   document.getElementById('fRating').value='4.5';
   document.getElementById('fVideos').value='0';
+  document.getElementById('fPriceOriginal').value='';
+  document.getElementById('fPricePromo').value='';
+  document.getElementById('pricePreview').style.display='none';
   document.getElementById('fBg').value=BGS[0];
   updPrev();
 }
@@ -663,6 +691,8 @@ window.saveBrand=async function(){
     comm:document.getElementById('fComm').value.trim()||'0',
     cookie:document.getElementById('fCookie').value.trim()||'30',
     rating:document.getElementById('fRating').value.trim()||'4.5',
+    priceOriginal:document.getElementById('fPriceOriginal').value.trim()||'',
+    pricePromo:document.getElementById('fPricePromo').value.trim()||'',
     bg:document.getElementById('fBg').value||BGS[0],
   };
 
@@ -723,6 +753,24 @@ onSnapshot(query(collection(db,'brands'),orderBy('createdAt','asc')),snap=>{
   BRANDS=snap.docs.map(d=>({docId:d.id,...d.data()}));
   renderList();setCount(BRANDS.length);
 },err=>{console.error(err);toast('⚠ Error load: '+err.message,true);});
+
+// ── Price Preview ─────────────────────────────────
+window.updatePricePreview = function(){
+  const orig  = parseFloat(document.getElementById('fPriceOriginal').value)||0;
+  const promo = parseFloat(document.getElementById('fPricePromo').value)||0;
+  const box   = document.getElementById('pricePreview');
+  if(!orig && !promo){ box.style.display='none'; return; }
+  box.style.display='block';
+  const fmt = n => 'Rp'+n.toLocaleString('id-ID');
+  document.getElementById('pvPromo').textContent    = promo ? fmt(promo) : (orig ? fmt(orig) : '');
+  document.getElementById('pvOriginal').textContent = (orig && promo && orig>promo) ? fmt(orig) : '';
+  if(orig && promo && orig>promo){
+    const pct = Math.round((orig-promo)/orig*100);
+    document.getElementById('pvDiscount').textContent = '-'+pct+'%';
+  } else {
+    document.getElementById('pvDiscount').textContent = '';
+  }
+};
 
 // ── Swatches ──────────────────────────────────────
 window.updPrev=function(){document.getElementById('bgPrev').style.background=document.getElementById('fBg').value||BGS[0];};
